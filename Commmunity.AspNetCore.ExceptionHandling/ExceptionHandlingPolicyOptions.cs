@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace Commmunity.AspNetCore.ExceptionHandling
         public ExceptionHandlingPolicyOptions Value => this;
 
         private readonly OrderedDictionary handlers = new OrderedDictionary();
+
+        private readonly List<Type> commonHandlers = new List<Type>();
 
         public ExceptionHandlingPolicyOptions EnsureException(Type exceptionType, int index = -1)
         {
@@ -66,6 +69,26 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 
             List<Type> list = this.handlers[exceptionType] as List<Type>;
 
+            ProcessHandlersList(list, handlerType, index);
+
+            return this;
+        }
+
+        public ExceptionHandlingPolicyOptions EnsureCommonHandler(Type handlerType, int index = -1)
+        {
+            if (!typeof(IExceptionHandler).IsAssignableFrom(handlerType))
+            {
+                throw new ArgumentOutOfRangeException(nameof(handlerType), handlerType,
+                    $"Handler type should implement {typeof(IExceptionHandler).Name}");
+            }            
+
+            ProcessHandlersList(this.commonHandlers, handlerType, index);
+
+            return this;
+        }
+
+        private static void ProcessHandlersList(List<Type> list, Type handlerType, int index)
+        {
             if (list.Any(type => type == handlerType))
             {
                 if (index >= 0)
@@ -85,8 +108,6 @@ namespace Commmunity.AspNetCore.ExceptionHandling
                     list.Insert(index, handlerType);
                 }
             }
-
-            return this;
         }
 
         public ExceptionHandlingPolicyOptions RemoveHandler(Type exceptionType, Type handlerType)
@@ -99,6 +120,16 @@ namespace Commmunity.AspNetCore.ExceptionHandling
                 {
                     list.Remove(handlerType);
                 }
+            }
+
+            return this;
+        }
+
+        public ExceptionHandlingPolicyOptions RemoveCommonHandler(Type handlerType)
+        {
+            if (this.commonHandlers.Contains(handlerType))
+            {
+                this.commonHandlers.Remove(handlerType);
             }
 
             return this;
@@ -118,6 +149,13 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 
                 list.Clear();
             }
+
+            return this;
+        }
+
+        public ExceptionHandlingPolicyOptions ClearCommonHandlers()
+        {
+            this.commonHandlers.Clear();
 
             return this;
         }

@@ -26,15 +26,19 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
             services.AddMvc();
 
             services.AddExceptionHandlingPolicies(options =>
-                options.EnsureException<ArgumentOutOfRangeException>()
-                    .EnsureHandler<LogExceptionHandler>().EnsureHandler<ReThrowExceptionHandler>());
+            {
+                options.AddLogHandler(l => l.Level = LogLevel.Debug);
+                options.ForException<ArgumentOutOfRangeException>().AddLogHandler().AddRethrowHandler();
+            });
+
+            services.AddLogging(b => b.AddConsole());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseDeveloperExceptionPage().UseExceptionHandlingPolicies();
-
+            app.UseExceptionHandler()
             app.UseMvc();
         }
     }

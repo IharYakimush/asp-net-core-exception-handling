@@ -6,6 +6,6 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 {
     public interface IExceptionHandler
     {
-        Task<bool> Handle(HttpContext httpContext, Exception exception, RequestDelegate next);
+        Task<bool> Handle(HttpContext httpContext, Exception exception);
     }
 }

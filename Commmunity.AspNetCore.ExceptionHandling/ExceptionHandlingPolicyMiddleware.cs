@@ -21,13 +21,12 @@ namespace Commmunity.AspNetCore.ExceptionHandling
         private static async Task<bool> EnumerateExceptionMapping(
             HttpContext context, 
             ExceptionHandlingPolicyOptions policyOptions,
-            Exception exception,
-            RequestDelegate next)
+            Exception exception)
         {
             Type exceptionType = exception.GetType();
 
             ILogger logger = context.RequestServices.GetService<ILogger<ExceptionHandlingPolicyMiddleware>>() ??
-                             NullLoggerFactory.Instance.CreateLogger<ExceptionHandlingPolicyMiddleware>();
+                             NullLoggerFactory.Instance.CreateLogger(Const.Category);
 
             bool? throwRequired = null;
 
@@ -35,7 +34,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             {
                 if (type.IsAssignableFrom(exceptionType))
                 {                    
-                    throwRequired = await EnumerateHandlers(context, exception, next, policyOptions, logger);
+                    throwRequired = await EnumerateHandlers(context, exception, policyOptions, logger);
 
                     break;
                 }
@@ -53,8 +52,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 
         private static async Task<bool> EnumerateHandlers(
             HttpContext context, 
-            Exception exception,
-            RequestDelegate next, 
+            Exception exception, 
             ExceptionHandlingPolicyOptions policyOptions, 
             ILogger logger)
         {
@@ -79,7 +77,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
                     }
                     else
                     {
-                        throwRequired = await handler.Handle(context, exception, next);
+                        throwRequired = await handler.Handle(context, exception);
                     }                    
                 }
                 catch (Exception e)
@@ -116,7 +114,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             {
                 ExceptionHandlingPolicyOptions policyOptions = this.options.Value;
 
-                bool throwRequired = await EnumerateExceptionMapping(context, policyOptions, exception, next);
+                bool throwRequired = await EnumerateExceptionMapping(context, policyOptions, exception);
 
                 if (throwRequired)
                 {

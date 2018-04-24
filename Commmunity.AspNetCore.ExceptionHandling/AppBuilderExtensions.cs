@@ -1,4 +1,5 @@
 ﻿using System;
+using Commmunity.AspNetCore.ExceptionHandling.Builder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -18,23 +19,14 @@ namespace Commmunity.AspNetCore.ExceptionHandling
         {            
             return app.UseMiddleware<ExceptionHandlingPolicyMiddleware>();
         }
-        public static IServiceCollection AddExceptionHandlingPolicies(this IServiceCollection services, Action<ExceptionHandlingPolicyOptions> options = null)
+        public static IServiceCollection AddExceptionHandlingPolicies(this IServiceCollection services, Action<IExceptionPolicyBuilder> builder)
         {
+            PolicyBuilder policyBuilder = new PolicyBuilder(services);
+            builder?.Invoke(policyBuilder);
+            services.TryAddSingleton<IOptions<ExceptionHandlingPolicyOptions>>(policyBuilder.Options);
             services.TryAddSingleton<ExceptionHandlingPolicyMiddleware>();
-            if (options != null)
-            {
-                services.Configure(options);
-            }
 
-            services.TryAddSingleton<ReThrowExceptionHandler>();
-            services.TryAddSingleton<LogExceptionHandler>();
-
-            return services;
-        }
-
-        public static IApplicationBuilder UseExceptionHandlingPolicies(this IApplicationBuilder app, ExceptionHandlingPolicyOptions options)
-        {
-            return app.UseMiddleware<ExceptionHandlingPolicyMiddleware>(Options.Create(options));
+            return policyBuilder;
         }
     }
 }
