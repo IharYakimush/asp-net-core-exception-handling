@@ -2,6 +2,8 @@
 using Commmunity.AspNetCore.ExceptionHandling.Builder;
 using Commmunity.AspNetCore.ExceptionHandling.Exc;
 using Commmunity.AspNetCore.ExceptionHandling.Logs;
+using Commmunity.AspNetCore.ExceptionHandling.Response;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -9,7 +11,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 {
     public static class PolicyBuilderExtensions
     {
-        public static ExceptionMapping<TException> ForException<TException>(
+        public static ExceptionMapping<TException> For<TException>(
             this IExceptionPolicyBuilder builder, int index = -1) where TException : Exception
         {
             builder.Options.EnsureException(typeof(TException), index);
@@ -27,29 +29,12 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             return builder;
         }
 
-        public static IExceptionPolicyBuilder EnsureCommonHandler<THandler>(
-            this IExceptionPolicyBuilder builder, int index = -1)
-            where THandler : class, IExceptionHandler
-        {
-            builder.Options.Value.EnsureCommonHandler(typeof(THandler), index);
-            builder.Services.TryAddSingleton<THandler>();
-            return builder;
-        }
-
         public static ExceptionMapping<TException> RemoveHandler<TException, THandler>(
             this ExceptionMapping<TException> builder)
             where THandler : IExceptionHandler
             where TException : Exception
         {
             builder.Options.Value.RemoveHandler(typeof(TException), typeof(THandler));
-            return builder;
-        }
-
-        public static IExceptionPolicyBuilder RemoveCommonHandler<THandler>(
-            this IExceptionPolicyBuilder builder, int index = -1)
-            where THandler : class, IExceptionHandler
-        {
-            builder.Options.RemoveCommonHandler(typeof(THandler));
             return builder;
         }
 
@@ -61,30 +46,16 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             return builder;
         }
 
-        public static IExceptionPolicyBuilder ClearCommonHandlers(
-            this IExceptionPolicyBuilder builder)
-        {
-            builder.Options.ClearCommonHandlers();
-            return builder;
-        }
-
         // rethrow
-        public static ExceptionMapping<TException> AddRethrowHandler<TException>(
+        public static IExceptionPolicyBuilder AddRethrow<TException>(
             this ExceptionMapping<TException> builder, int index = -1)
             where TException : Exception
-        {
+        {            
             return builder.EnsureHandler<TException,ReThrowExceptionHandler>(index);
         }
 
-        public static IExceptionPolicyBuilder AddRethrowHandler<TException>(
-            this IExceptionPolicyBuilder builder, int index = -1)
-            where TException : Exception
-        {
-            return builder.EnsureCommonHandler<ReThrowExceptionHandler>(index);
-        }
-
         // Log
-        public static ExceptionMapping<TException> AddLogHandler<TException>(
+        public static ExceptionMapping<TException> AddLog<TException>(
             this ExceptionMapping<TException> builder, Action<LogHandlerOptions<TException>> settings = null, int index = -1)
             where TException : Exception
         {
@@ -94,14 +65,31 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             return builder.EnsureHandler<TException, LogExceptionHandler<TException>>(index);
         }
 
-        public static IExceptionPolicyBuilder AddLogHandler(
-            this IExceptionPolicyBuilder builder, Action<LogHandlerOptions<CommonConfigurationException>> settings = null, int index = -1)
+        // Set status code
+        public static ExceptionMapping<TException> AddStatusCode<TException>(
+            this ExceptionMapping<TException> builder, Func<TException,int> settings = null, int index = -1)
+            where TException : Exception
         {
-            LogHandlerOptions<CommonConfigurationException> options = new LogHandlerOptions<CommonConfigurationException>();
-            settings?.Invoke(options);
-            builder.Services.TryAddSingleton(options);
+            if (settings != null)
+            {
+                builder.Services.Configure<SetStatusCodeOptions<TException>>(codeOptions =>
+                    codeOptions.StatusCodeFactory = settings);
+            }
+            
+            return builder.EnsureHandler<TException, SetStatusCodeHandler<TException>>(index);
+        }
 
-            return builder.EnsureCommonHandler<LogExceptionHandler<CommonConfigurationException>>(index);
+        public static ExceptionMapping<TException> AddHeaders<TException>(
+            this ExceptionMapping<TException> builder, Action<IHeaderDictionary,TException> settings = null, int index = -1)
+            where TException : Exception
+        {
+            if (settings != null)
+            {
+                builder.Services.Configure<SetHeadersOptions<TException>>(codeOptions =>
+                    codeOptions.SetHeadersAction = settings);
+            }
+
+            return builder.EnsureHandler<TException, SetHeadersHandler<TException>>(index);
         }
     }
 }

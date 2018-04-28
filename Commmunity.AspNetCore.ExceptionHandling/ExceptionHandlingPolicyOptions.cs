@@ -13,8 +13,6 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 
         private readonly OrderedDictionary handlers = new OrderedDictionary();
 
-        private readonly List<Type> commonHandlers = new List<Type>();
-
         public ExceptionHandlingPolicyOptions EnsureException(Type exceptionType, int index = -1)
         {
             if (!typeof(Exception).IsAssignableFrom(exceptionType))
@@ -74,19 +72,6 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             return this;
         }
 
-        public ExceptionHandlingPolicyOptions EnsureCommonHandler(Type handlerType, int index = -1)
-        {
-            if (!typeof(IExceptionHandler).IsAssignableFrom(handlerType))
-            {
-                throw new ArgumentOutOfRangeException(nameof(handlerType), handlerType,
-                    $"Handler type should implement {typeof(IExceptionHandler).Name}");
-            }            
-
-            ProcessHandlersList(this.commonHandlers, handlerType, index);
-
-            return this;
-        }
-
         private static void ProcessHandlersList(List<Type> list, Type handlerType, int index)
         {
             if (list.Any(type => type == handlerType))
@@ -124,17 +109,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 
             return this;
         }
-
-        public ExceptionHandlingPolicyOptions RemoveCommonHandler(Type handlerType)
-        {
-            if (this.commonHandlers.Contains(handlerType))
-            {
-                this.commonHandlers.Remove(handlerType);
-            }
-
-            return this;
-        }
-
+        
         public ExceptionHandlingPolicyOptions ClearExceptions()
         {
             this.handlers.Clear();
@@ -149,13 +124,6 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 
                 list.Clear();
             }
-
-            return this;
-        }
-
-        public ExceptionHandlingPolicyOptions ClearCommonHandlers()
-        {
-            this.commonHandlers.Clear();
 
             return this;
         }

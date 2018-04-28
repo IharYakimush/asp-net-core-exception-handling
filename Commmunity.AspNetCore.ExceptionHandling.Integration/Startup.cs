@@ -27,8 +27,8 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
 
             services.AddExceptionHandlingPolicies(options =>
             {
-                options.AddLogHandler(l => l.Level = LogLevel.Debug);
-                options.ForException<ArgumentOutOfRangeException>().AddLogHandler().AddRethrowHandler();
+                options.For<ArgumentOutOfRangeException>().AddLog().AddRethrow();
+                options.For<InvalidCastException>().AddLog().AddStatusCode(e => 400).AddHeaders((h, e) => h["X-qwe"] = e.Message);
             });
 
             services.AddLogging(b => b.AddConsole());
@@ -38,7 +38,6 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseDeveloperExceptionPage().UseExceptionHandlingPolicies();
-            app.UseExceptionHandler()
             app.UseMvc();
         }
     }
