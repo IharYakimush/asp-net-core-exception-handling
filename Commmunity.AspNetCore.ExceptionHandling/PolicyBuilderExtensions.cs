@@ -11,26 +11,25 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 {
     public static class PolicyBuilderExtensions
     {
-        public static ExceptionMapping<TException> For<TException>(
+        public static IExceptionMapping<TException> For<TException>(
             this IExceptionPolicyBuilder builder, int index = -1) where TException : Exception
         {
             builder.Options.EnsureException(typeof(TException), index);
             return new ExceptionMapping<TException>(builder);
         }
 
-        public static ExceptionMapping<TException> EnsureHandler<TException,THandler>(
-            this ExceptionMapping<TException> builder, int index = -1) 
+        public static void EnsureHandler<TException,THandler>(
+            this IExceptionPolicyBuilder builder, int index = -1) 
             where THandler : class , IExceptionHandler
             where TException : Exception
 
         {
             builder.Options.Value.EnsureHandler(typeof(TException), typeof(THandler), index);
             builder.Services.TryAddSingleton<THandler>();
-            return builder;
         }
 
-        public static ExceptionMapping<TException> RemoveHandler<TException, THandler>(
-            this ExceptionMapping<TException> builder)
+        public static IExceptionMapping<TException> RemoveHandler<TException, THandler>(
+            this IExceptionMapping<TException> builder)
             where THandler : IExceptionHandler
             where TException : Exception
         {
@@ -38,8 +37,8 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             return builder;
         }
 
-        public static ExceptionMapping<TException> Clear<TException>(
-            this ExceptionMapping<TException> builder)
+        public static IExceptionMapping<TException> Clear<TException>(
+            this IExceptionMapping<TException> builder)
             where TException : Exception
         {
             builder.Options.Value.ClearHandlers(typeof(TException));
@@ -48,39 +47,44 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 
         // rethrow
         public static IExceptionPolicyBuilder AddRethrow<TException>(
-            this ExceptionMapping<TException> builder, int index = -1)
+            this IExceptionMapping<TException> builder, int index = -1)
             where TException : Exception
-        {            
-            return builder.EnsureHandler<TException,ReThrowExceptionHandler>(index);
+        {
+            builder.EnsureHandler<TException, ReThrowExceptionHandler>(index);
+            return builder;
         }
 
         // Log
-        public static ExceptionMapping<TException> AddLog<TException>(
-            this ExceptionMapping<TException> builder, Action<LogHandlerOptions<TException>> settings = null, int index = -1)
+        public static IExceptionMapping<TException> AddLog<TException>(
+            this IExceptionMapping<TException> builder, Action<LogHandlerOptions<TException>> settings = null, int index = -1)
             where TException : Exception
         {
             LogHandlerOptions<TException> options = new LogHandlerOptions<TException>();
             settings?.Invoke(options);
             builder.Services.TryAddSingleton(options);
-            return builder.EnsureHandler<TException, LogExceptionHandler<TException>>(index);
+            builder.EnsureHandler<TException, LogExceptionHandler<TException>>(index);
+
+            return builder;
         }
 
         // Set status code
-        public static ExceptionMapping<TException> AddStatusCode<TException>(
-            this ExceptionMapping<TException> builder, Func<TException,int> settings = null, int index = -1)
+        public static IResponseHandlers<TException> AddNewResponse<TException>(
+            this IExceptionMapping<TException> builder, Func<TException,int> statusCodeFactory = null, int index = -1)
             where TException : Exception
         {
-            if (settings != null)
+            if (statusCodeFactory != null)
             {
-                builder.Services.Configure<SetStatusCodeOptions<TException>>(codeOptions =>
-                    codeOptions.StatusCodeFactory = settings);
+                builder.Services.Configure<NewResponseOptions<TException>>(codeOptions =>
+                    codeOptions.StatusCodeFactory = statusCodeFactory);
             }
-            
-            return builder.EnsureHandler<TException, SetStatusCodeHandler<TException>>(index);
+
+            builder.EnsureHandler<TException, NewResponseHandler<TException>>(index);
+
+            return builder as IResponseHandlers<TException>;
         }
 
-        public static ExceptionMapping<TException> AddHeaders<TException>(
-            this ExceptionMapping<TException> builder, Action<IHeaderDictionary,TException> settings = null, int index = -1)
+        public static IResponseHandlers<TException> WithHeaders<TException>(
+            this IResponseHandlers<TException> builder, Action<IHeaderDictionary,TException> settings = null, int index = -1)
             where TException : Exception
         {
             if (settings != null)
@@ -89,7 +93,9 @@ namespace Commmunity.AspNetCore.ExceptionHandling
                     codeOptions.SetHeadersAction = settings);
             }
 
-            return builder.EnsureHandler<TException, SetHeadersHandler<TException>>(index);
+            builder.EnsureHandler<TException, SetHeadersHandler<TException>>(index);
+
+            return builder;
         }
     }
 }

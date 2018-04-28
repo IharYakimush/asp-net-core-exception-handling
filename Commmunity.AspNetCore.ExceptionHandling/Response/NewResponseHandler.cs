@@ -4,10 +4,10 @@ using Microsoft.Extensions.Options;
 
 namespace Commmunity.AspNetCore.ExceptionHandling.Response
 {
-    public class SetStatusCodeHandler<TException> : RawResponseExceptionHandler<TException>
+    public class NewResponseHandler<TException> : RawResponseExceptionHandler<TException>
     where TException : Exception
     {
-        public SetStatusCodeHandler(IOptions<SetStatusCodeOptions<TException>> options,
+        public NewResponseHandler(IOptions<NewResponseOptions<TException>> options,
             ILoggerFactory loggerFactory) : base(options.Value, loggerFactory)
         {
         }

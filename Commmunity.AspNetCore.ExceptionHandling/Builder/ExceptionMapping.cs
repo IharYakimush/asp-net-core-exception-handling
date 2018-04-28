@@ -3,7 +3,7 @@
     using System;
     using Microsoft.Extensions.DependencyInjection;
 
-    public class ExceptionMapping<TException> : IExceptionPolicyBuilder
+    public class ExceptionMapping<TException> : IExceptionPolicyBuilder, IExceptionMapping<TException>, IResponseHandlers<TException>
         where TException : Exception
     {
         public IExceptionPolicyBuilder Builder { get; }

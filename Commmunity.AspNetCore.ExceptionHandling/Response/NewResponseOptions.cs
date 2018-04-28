@@ -4,10 +4,10 @@ using Microsoft.Extensions.Options;
 
 namespace Commmunity.AspNetCore.ExceptionHandling.Response
 {
-    public class SetStatusCodeOptions<TException> : IOptions<SetStatusCodeOptions<TException>>, IOptions<RawResponseHandlerOptions<TException>>
+    public class NewResponseOptions<TException> : IOptions<NewResponseOptions<TException>>, IOptions<RawResponseHandlerOptions<TException>>
     where TException : Exception
     {
-        public SetStatusCodeOptions<TException> Value => this;
+        public NewResponseOptions<TException> Value => this;
 
         public Func<TException, int> StatusCodeFactory =
             exception => StatusCodes.Status500InternalServerError;
@@ -18,6 +18,9 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
                 SetResponse =
                     async (context, exception) =>
                     {
+                        context.Response.Headers.Clear();
+                        if (context.Response.Body.CanSeek)
+                            context.Response.Body.SetLength(0L);
                         context.Response.StatusCode = this.StatusCodeFactory(exception);
                     }
             };

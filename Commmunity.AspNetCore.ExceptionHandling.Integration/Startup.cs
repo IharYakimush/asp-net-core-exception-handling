@@ -28,7 +28,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
             services.AddExceptionHandlingPolicies(options =>
             {
                 options.For<ArgumentOutOfRangeException>().AddLog().AddRethrow();
-                options.For<InvalidCastException>().AddLog().AddStatusCode(e => 400).AddHeaders((h, e) => h["X-qwe"] = e.Message);
+                options.For<InvalidCastException>().AddLog().AddNewResponse(e => 400).WithHeaders((h, e) => h["X-qwe"] = e.Message);
             });
 
             services.AddLogging(b => b.AddConsole());
@@ -37,7 +37,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseDeveloperExceptionPage().UseExceptionHandlingPolicies();
+            app.UseDeveloperExceptionPage().UseExceptionHandler().UseExceptionHandlingPolicies();
             app.UseMvc();
         }
     }
