@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Commmunity.AspNetCore.ExceptionHandling.Handlers;
 using Commmunity.AspNetCore.ExceptionHandling.Logs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -21,25 +22,40 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
             _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
-        protected override async Task<bool> HandleStrongType(HttpContext httpContext, TException exception)
+        protected override async Task<HandlerResult> HandleStrongType(HttpContext httpContext, TException exception)
         {
             if (httpContext.Response.HasStarted)
             {
-                this.Logger.LogError(ResponseHasStarted,
-                    "Unable to execute {handletType} handler, because respnse already started. Exception will be re-thrown.",
-                    this.GetType());
+                if (this._options.RequestStartedBehaviour == RequestStartedBehaviour.ReThrow)
+                {
+                    this.Logger.LogError(ResponseHasStarted,
+                        "Unable to execute {handletType} handler, because respnse already started. Exception will be re-thrown.",
+                        this.GetType());
 
-                return true;
+                    return HandlerResult.ReThrow;
+                }
+                else
+                {
+                    return HandlerResult.NextHandler;
+                }
+                
             }
             
             await HandleResponseAsync(httpContext, exception);
 
-            return false;
+            return HandlerResult.NextHandler;
         }
 
-        protected virtual async Task HandleResponseAsync(HttpContext httpContext, TException exception)
+        protected virtual Task HandleResponseAsync(HttpContext httpContext, TException exception)
         {
-            if (_options.SetResponse != null) await _options.SetResponse(httpContext, exception);
+            Task result = Task.CompletedTask;
+
+            foreach (Func<HttpContext, TException, Task> func in this._options.SetResponse)
+            {
+                result = result.ContinueWith(task => func(httpContext, exception));                
+            }
+
+            return result;                      
         }
     }
 }

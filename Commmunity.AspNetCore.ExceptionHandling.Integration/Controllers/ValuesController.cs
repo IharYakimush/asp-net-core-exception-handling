@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,11 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
+            if (id > 15)
+            {
+                throw new InvalidConstraintException();
+            }
+
             if (id > 10)
             {
                 throw new ArgumentOutOfRangeException();

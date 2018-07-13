@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Commmunity.AspNetCore.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -9,7 +11,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
         IOptions<RawResponseHandlerOptions<TException>>
         where TException : Exception
     {
-        public Func<HttpContext, TException, Task> SetResponse { get; set; } = null;
+        public List<Func<HttpContext, TException, Task>> SetResponse { get; set; } = new List<Func<HttpContext, TException, Task>>();
         public RawResponseHandlerOptions<TException> Value => this;
     }
 }

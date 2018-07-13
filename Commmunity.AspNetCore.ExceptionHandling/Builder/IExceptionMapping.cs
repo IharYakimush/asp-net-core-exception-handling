@@ -7,7 +7,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Builder
     {        
     }
 
-    public interface IResponseHandlers<TException> : IExceptionPolicyBuilder
+    public interface IResponseHandlers<TException> : IExceptionMapping<TException>
         where TException : Exception
     {
     }

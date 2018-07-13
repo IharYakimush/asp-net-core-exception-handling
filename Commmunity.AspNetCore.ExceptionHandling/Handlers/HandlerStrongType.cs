@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Logs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Commmunity.AspNetCore.ExceptionHandling
+namespace Commmunity.AspNetCore.ExceptionHandling.Handlers
 {
     public abstract class HandlerStrongType<TException> : HandlerWithLogger, IExceptionHandler
         where TException : Exception
@@ -16,7 +15,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
         {
         }
 
-        public async Task<bool> Handle(HttpContext httpContext, Exception exception)
+        public async Task<HandlerResult> Handle(HttpContext httpContext, Exception exception)
         {            
             if (exception is TException e)
             {
@@ -28,10 +27,10 @@ namespace Commmunity.AspNetCore.ExceptionHandling
                     "Excpetion type {exceptionType} not match current generic type {genericType}. Exception will be re-thrown.",
                     exception.GetType(), typeof(TException));
 
-                return true;
+                return HandlerResult.ReThrow;
             }
         }
 
-        protected abstract Task<bool> HandleStrongType(HttpContext httpContext, TException exception);
+        protected abstract Task<HandlerResult> HandleStrongType(HttpContext httpContext, TException exception);
     }
 }

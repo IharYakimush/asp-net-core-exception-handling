@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Commmunity.AspNetCore.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -28,36 +29,49 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             ILogger logger = context.RequestServices.GetService<ILogger<ExceptionHandlingPolicyMiddleware>>() ??
                              NullLoggerFactory.Instance.CreateLogger(Const.Category);
 
-            bool? throwRequired = null;
+            bool mappingExists = false;
+            HandlerResult handleResult = HandlerResult.ReThrow;
 
             foreach (Type type in policyOptions.GetExceptionsInternal())
             {
                 if (type.IsAssignableFrom(exceptionType))
-                {                    
-                    throwRequired = await EnumerateHandlers(context, exception, policyOptions, logger);
+                {
+                    mappingExists = true;
+                    handleResult = await EnumerateHandlers(context, type, exception, policyOptions, logger);
 
-                    break;
+                    if (handleResult == HandlerResult.ReThrow)
+                    {
+                        return true;
+                    }
+
+                    if (handleResult != HandlerResult.NextChain)
+                    {
+                        break;
+                    }
                 }
             }
 
-            if (!throwRequired.HasValue)
+            if (!mappingExists)
             {
                 logger.LogWarning(Events.PolicyNotFound,
                     "Handlers mapping for exception type {exceptionType} not exists. Exception will be re-thrown. RequestId: {RequestId}",
                     exceptionType, context.TraceIdentifier);
+
+                return false;
             }
 
-            return throwRequired ?? true;
+            return handleResult == HandlerResult.ReThrow;
         }
 
-        private static async Task<bool> EnumerateHandlers(
+        private static async Task<HandlerResult> EnumerateHandlers(
             HttpContext context, 
+            Type exceptionType,
             Exception exception, 
             ExceptionHandlingPolicyOptions policyOptions, 
             ILogger logger)
         {
-            bool? throwRequired = null;
-            Type exceptionType = exception.GetType();
+            bool handlerExecuted = false;
+            HandlerResult handleResult = HandlerResult.ReThrow;
 
             IEnumerable<Type> handlers = policyOptions.GetHandlersInternal(exceptionType);
 
@@ -70,14 +84,15 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 
                     if (handler == null)
                     {
-                        throwRequired = true;
+                        handlerExecuted = false;
                         logger.LogError(Events.HandlerNotCreated,
                             "Handler type {handlerType} can't be created because it not registered in IServiceProvider. RequestId: {RequestId}",
                             handlerType, context.TraceIdentifier);
                     }
                     else
                     {
-                        throwRequired = await handler.Handle(context, exception);
+                        handleResult = await handler.Handle(context, exception);
+                        handlerExecuted = true;
                     }                    
                 }
                 catch (Exception e)
@@ -85,23 +100,26 @@ namespace Commmunity.AspNetCore.ExceptionHandling
                     logger.LogError(Events.HandlerError, e,
                         "Unhandled exception executing handler of type {handlerType} on exception of type {exceptionType}. RequestId: {RequestId}",
                         handlerType, exceptionType, context.TraceIdentifier);
-                    throwRequired = true;
+
+                    return HandlerResult.ReThrow;
                 }
 
-                if (throwRequired.Value)
+                if (handleResult != HandlerResult.NextHandler)
                 {
                     break;
                 }
             }
 
-            if (!throwRequired.HasValue)
+            if (!handlerExecuted)
             {
                 logger.LogWarning(Events.HandlersNotFound,
                     "Handlers collection for exception type {exceptionType} is empty. Exception will be re-thrown. RequestId: {RequestId}",
                     exceptionType, context.TraceIdentifier);
+
+                return HandlerResult.ReThrow;
             }
 
-            return throwRequired ?? true;
+            return handleResult;
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)

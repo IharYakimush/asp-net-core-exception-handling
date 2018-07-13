@@ -1,11 +1,16 @@
 ﻿using System;
+using System.IO;
+using System.Net;
+using System.Threading.Tasks;
 using Commmunity.AspNetCore.ExceptionHandling.Builder;
 using Commmunity.AspNetCore.ExceptionHandling.Exc;
+using Commmunity.AspNetCore.ExceptionHandling.Handlers;
 using Commmunity.AspNetCore.ExceptionHandling.Logs;
 using Commmunity.AspNetCore.ExceptionHandling.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Commmunity.AspNetCore.ExceptionHandling
 {
@@ -46,7 +51,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
         }
 
         // rethrow
-        public static IExceptionPolicyBuilder AddRethrow<TException>(
+        public static IExceptionPolicyBuilder Rethrow<TException>(
             this IExceptionMapping<TException> builder, int index = -1)
             where TException : Exception
         {
@@ -54,46 +59,81 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             return builder;
         }
 
+        // next chain
+        public static IExceptionPolicyBuilder NextChain<TException>(
+            this IExceptionMapping<TException> builder, int index = -1)
+            where TException : Exception
+        {
+            builder.EnsureHandler<TException, NextChainHandler>(index);
+            return builder;
+        }
+
         // Log
-        public static IExceptionMapping<TException> AddLog<TException>(
+        public static IExceptionMapping<TException> Log<TException>(
             this IExceptionMapping<TException> builder, Action<LogHandlerOptions<TException>> settings = null, int index = -1)
             where TException : Exception
         {
-            LogHandlerOptions<TException> options = new LogHandlerOptions<TException>();
-            settings?.Invoke(options);
-            builder.Services.TryAddSingleton(options);
+            builder.Services.Configure<LogHandlerOptions<TException>>(o =>
+            {
+                var ho = o as LogHandlerOptions<TException>;
+                settings?.Invoke(ho);
+            });
+
             builder.EnsureHandler<TException, LogExceptionHandler<TException>>(index);
 
             return builder;
         }
 
         // Set status code
-        public static IResponseHandlers<TException> AddNewResponse<TException>(
-            this IExceptionMapping<TException> builder, Func<TException,int> statusCodeFactory = null, int index = -1)
+        public static IResponseHandlers<TException> NewResponse<TException>(
+            this IExceptionMapping<TException> builder, 
+            Func<TException,int> statusCodeFactory = null, 
+            RequestStartedBehaviour requestStartedBehaviour = RequestStartedBehaviour.ReThrow, 
+            int index = -1)
             where TException : Exception
-        {
-            if (statusCodeFactory != null)
+        {            
+            builder.Services.Configure<RawResponseHandlerOptions<TException>>(responceOptions =>
             {
-                builder.Services.Configure<NewResponseOptions<TException>>(codeOptions =>
-                    codeOptions.StatusCodeFactory = statusCodeFactory);
-            }
+                responceOptions.RequestStartedBehaviour = requestStartedBehaviour;
+                responceOptions.SetResponse.Add((context, exception) =>
+                {
+                    if (context.Response.Body.CanSeek)
+                        context.Response.Body.SetLength(0L);
+                    context.Response.StatusCode =
+                        statusCodeFactory?.Invoke(exception) ?? (int) HttpStatusCode.InternalServerError;
+                    return Task.CompletedTask;
+                });
+            });
 
-            builder.EnsureHandler<TException, NewResponseHandler<TException>>(index);
+            builder.EnsureHandler<TException, RawResponseExceptionHandler<TException>>(index);
 
             return builder as IResponseHandlers<TException>;
         }
 
         public static IResponseHandlers<TException> WithHeaders<TException>(
-            this IResponseHandlers<TException> builder, Action<IHeaderDictionary,TException> settings = null, int index = -1)
+            this IResponseHandlers<TException> builder, Action<IHeaderDictionary,TException> settings, int index = -1)
             where TException : Exception
         {
-            if (settings != null)
-            {
-                builder.Services.Configure<SetHeadersOptions<TException>>(codeOptions =>
-                    codeOptions.SetHeadersAction = settings);
-            }
+            builder.Services.Configure<RawResponseHandlerOptions<TException>>(responceOptions =>
+            {                
+                responceOptions.SetResponse.Add((context, exception) =>
+                {
+                    settings?.Invoke(context.Response.Headers, exception);
+                    return Task.CompletedTask;
+                });
+            });
 
-            builder.EnsureHandler<TException, SetHeadersHandler<TException>>(index);
+            return builder;
+        }
+
+        public static IResponseHandlers<TException> WithBody<TException>(
+            this IResponseHandlers<TException> builder, Func<Stream, TException, Task> settings, int index = -1)
+            where TException : Exception
+        {
+            builder.Services.Configure<RawResponseHandlerOptions<TException>>(responceOptions =>
+            {
+                responceOptions.SetResponse.Add((context, exception) => settings(context.Response.Body, exception));
+            });
 
             return builder;
         }

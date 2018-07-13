@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Commmunity.AspNetCore.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Internal;
@@ -20,7 +21,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Logs
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
-        public Task<bool> Handle(HttpContext httpContext, Exception exception)
+        public Task<HandlerResult> Handle(HttpContext httpContext, Exception exception)
         {
             ILoggerFactory loggerFactory =
                 httpContext.RequestServices.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
@@ -42,7 +43,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Logs
                 logger.Log(this.Settings.Level, eventId, state, exception, formatter);                
             }
             
-            return Task.FromResult(false);
+            return Task.FromResult(HandlerResult.NextHandler);
         }
     }
 }

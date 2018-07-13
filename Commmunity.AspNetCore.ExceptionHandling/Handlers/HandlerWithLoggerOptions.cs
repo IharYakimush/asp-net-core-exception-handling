@@ -1,6 +1,6 @@
-﻿namespace Commmunity.AspNetCore.ExceptionHandling
+﻿namespace Commmunity.AspNetCore.ExceptionHandling.Handlers
 {
-    public class HandlerWithLoggerOptions
+    public class HandlerWithLoggerOptions : HandlerOptions
     {
         private string _loggerCategory = null;
 

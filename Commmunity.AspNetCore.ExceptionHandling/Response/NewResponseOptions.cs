@@ -4,25 +4,25 @@ using Microsoft.Extensions.Options;
 
 namespace Commmunity.AspNetCore.ExceptionHandling.Response
 {
-    public class NewResponseOptions<TException> : IOptions<NewResponseOptions<TException>>, IOptions<RawResponseHandlerOptions<TException>>
-    where TException : Exception
-    {
-        public NewResponseOptions<TException> Value => this;
+    //public class NewResponseOptions<TException> : HandlerOptions, IOptions<NewResponseOptions<TException>>, IOptions<RawResponseHandlerOptions<TException>>
+    //where TException : Exception
+    //{
+    //    public NewResponseOptions<TException> Value => this;
 
-        public Func<TException, int> StatusCodeFactory =
-            exception => StatusCodes.Status500InternalServerError;
+    //    public Func<TException, int> StatusCodeFactory =
+    //        exception => StatusCodes.Status500InternalServerError;
 
-        RawResponseHandlerOptions<TException> IOptions<RawResponseHandlerOptions<TException>>.Value =>                        
-            new RawResponseHandlerOptions<TException>
-            {
-                SetResponse =
-                    async (context, exception) =>
-                    {
-                        context.Response.Headers.Clear();
-                        if (context.Response.Body.CanSeek)
-                            context.Response.Body.SetLength(0L);
-                        context.Response.StatusCode = this.StatusCodeFactory(exception);
-                    }
-            };
-    }
+    //    RawResponseHandlerOptions<TException> IOptions<RawResponseHandlerOptions<TException>>.Value =>                        
+    //        new RawResponseHandlerOptions<TException>
+    //        {
+    //            SetResponse =
+    //                async (context, exception) =>
+    //                {
+    //                    context.Response.Headers.Clear();
+    //                    if (context.Response.Body.CanSeek)
+    //                        context.Response.Body.SetLength(0L);
+    //                    context.Response.StatusCode = this.StatusCodeFactory(exception);
+    //                }
+    //        };
+    //}
 }
