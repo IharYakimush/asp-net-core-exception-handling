@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Commmunity.AspNetCore.ExceptionHandling.Handlers;
@@ -12,6 +13,8 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
     public class RawResponseExceptionHandler<TException> : HandlerStrongType<TException>
         where TException : Exception
     {
+        public const string StatusCodeSetKey = "5D1CFED34A39";
+
         private readonly RawResponseHandlerOptions<TException> _options;
 
         private static readonly EventId ResponseHasStarted = new EventId(127, "ResponseAlreadyStarted");
@@ -56,6 +59,24 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
             }
 
             return result;                      
+        }
+
+        public static Task SetStatusCode(HttpContext context, TException exception, Func<TException, int> statusCodeFactory)
+        {
+            if(statusCodeFactory == null)
+            {
+                if (!context.Items.ContainsKey(StatusCodeSetKey))
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                }
+            }
+            else
+            {
+                context.Response.StatusCode = statusCodeFactory.Invoke(exception);
+                context.Items[StatusCodeSetKey] = true;
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

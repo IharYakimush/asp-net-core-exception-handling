@@ -1,12 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Middleware to configure exception handling policies. Configure chain of handlers per exception type. OOTB handlers: log, retry, set responce headers and body</Description>
+    <PackageProjectUrl>https://github.com/IharYakimush/AspNetCore</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/IharYakimush/AspNetCore/blob/develop/LICENSE</PackageLicenseUrl>
+    <Copyright>IharYakimush</Copyright>
+    <PackageTags>AspNetCore exception handling policy</PackageTags>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <FileVersion>2.0.0.0</FileVersion>
+    <Company />
+    <Authors>IharYakimush</Authors>
+    <Version>2.0.0</Version>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\sgn.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
   </ItemGroup>
 
 </Project>

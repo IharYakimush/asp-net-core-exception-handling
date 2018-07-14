@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace Commmunity.AspNetCore.ExceptionHandling
 {
@@ -122,12 +124,10 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             builder.Services.Configure<RawResponseHandlerOptions<TException>>(responceOptions =>
             {
                 responceOptions.RequestStartedBehaviour = requestStartedBehaviour;
+                
                 responceOptions.SetResponse.Add((context, exception) =>
-                {                    
-                    context.Response.StatusCode =
-                        statusCodeFactory?.Invoke(exception) ?? (int) HttpStatusCode.InternalServerError;
-
-                    return Task.CompletedTask;
+                {
+                    return RawResponseExceptionHandler<TException>.SetStatusCode(context, exception, statusCodeFactory);
                 });
             });
 
@@ -140,11 +140,38 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             this IResponseHandlers<TException> builder, Action<IHeaderDictionary,TException> settings, int index = -1)
             where TException : Exception
         {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
             builder.Services.Configure<RawResponseHandlerOptions<TException>>(responceOptions =>
             {                
                 responceOptions.SetResponse.Add((context, exception) =>
                 {
-                    settings?.Invoke(context.Response.Headers, exception);
+                    settings.Invoke(context.Response.Headers, exception);
+                    return Task.CompletedTask;
+                });
+            });
+
+            return builder;
+        }
+
+        public static IResponseHandlers<TException> ClearCacheHeaders<TException>(
+            this IResponseHandlers<TException> builder, int index = -1)
+            where TException : Exception
+        {
+            builder.Services.Configure<RawResponseHandlerOptions<TException>>(responceOptions =>
+            {
+                responceOptions.SetResponse.Add((context, exception) =>
+                {
+                    HttpResponse response = context.Response;
+
+                    response.Headers[HeaderNames.CacheControl] = "no-cache";
+                    response.Headers[HeaderNames.Pragma] = "no-cache";
+                    response.Headers[HeaderNames.Expires] = "-1";
+                    response.Headers.Remove(HeaderNames.ETag);
+
                     return Task.CompletedTask;
                 });
             });
@@ -153,20 +180,59 @@ namespace Commmunity.AspNetCore.ExceptionHandling
         }
 
         public static IResponseHandlers<TException> WithBody<TException>(
-            this IResponseHandlers<TException> builder, Func<Stream, TException, Task> settings, int index = -1)
+            this IResponseHandlers<TException> builder, Func<HttpRequest, Stream, TException, Task> settings, int index = -1)
             where TException : Exception
         {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
             builder.Services.Configure<RawResponseHandlerOptions<TException>>(responceOptions =>
             {
                 responceOptions.SetResponse.Add((context, exception) =>
                 {
                     if (context.Response.Body.CanSeek)
                         context.Response.Body.SetLength(0L);
-                    return settings(context.Response.Body, exception);
+
+                    return settings(context.Request,context.Response.Body, exception);
                 });
             });
 
             return builder;
+        }
+
+        public static IResponseHandlers<TException> WithBodyJson<TException, TObject>(
+            this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TObject> value, JsonSerializerSettings settings = null, int index = -1)
+            where TException : Exception
+        {
+            return builder.WithBody((request, stream, exception) =>
+            {
+                if (settings == null)
+                {                    
+                    settings = request.HttpContext.RequestServices.GetService<JsonSerializerSettings>();
+                }
+
+                if (settings == null)
+                {
+                    settings = new JsonSerializerSettings();
+                }
+
+                JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
+
+                var headers = request.HttpContext.Response.Headers;
+                if (!headers.ContainsKey(HeaderNames.ContentType))
+                {
+                    headers[HeaderNames.ContentType] = "application/json";
+                }
+
+                using (TextWriter textWriter = new StreamWriter(stream))
+                {
+                    jsonSerializer.Serialize(textWriter, value(request, exception));
+                }
+
+                return Task.CompletedTask;
+            });
         }
     }
 }

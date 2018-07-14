@@ -38,7 +38,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
                 options.For<InvalidCastException>()
                     .Response(e => 400)
                     .WithHeaders((h, e) => h["X-qwe"] = e.Message)
-                    .WithBody((stream, exception) =>
+                    .WithBody((req,stream, exception) =>
                     {
                         using (StreamWriter sw = new StreamWriter(stream))
                         {
@@ -48,17 +48,10 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
                     .NextChain();
                 options.For<Exception>()
                     .Log(lo => { lo.Formatter = (o, e) => "qwe"; })
-                    .Response(e => 500, RequestStartedBehaviour.SkipHandler).WithBody(
-                    async (stream, exception) =>
-                    {
-                        using (StreamWriter sw = new StreamWriter(stream))
-                        {                            
-                            await sw.WriteAsync("unhandled exception");
-                        }
-                    })
+                    .Response(e => 500, RequestStartedBehaviour.SkipHandler).ClearCacheHeaders().WithBodyJson((r, e) => new { msg = e.Message, path = r.Path })
                     .Handled();
             });
-
+            
             services.AddLogging();
         }
 
