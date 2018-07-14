@@ -21,6 +21,17 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
+
+            if (id > 25)
+            {
+                throw new DuplicateWaitObjectException();
+            }
+
+            if (id > 20)
+            {
+                throw new DuplicateNameException();
+            }
+
             if (id > 15)
             {
                 throw new InvalidConstraintException();

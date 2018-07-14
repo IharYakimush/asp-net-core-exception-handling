@@ -7,6 +7,7 @@ using Commmunity.AspNetCore.ExceptionHandling.Exc;
 using Commmunity.AspNetCore.ExceptionHandling.Handlers;
 using Commmunity.AspNetCore.ExceptionHandling.Logs;
 using Commmunity.AspNetCore.ExceptionHandling.Response;
+using Commmunity.AspNetCore.ExceptionHandling.Retry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -68,24 +69,50 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             return builder;
         }
 
+        // mark handled
+        public static IExceptionPolicyBuilder Handled<TException>(
+            this IExceptionMapping<TException> builder, int index = -1)
+            where TException : Exception
+        {
+            builder.EnsureHandler<TException, MarkHandledHandler>(index);
+            return builder;
+        }
+
+        // Retry
+        public static IExceptionMapping<TException> Retry<TException>(
+           this IExceptionMapping<TException> builder, Action<RetryHandlerOptions<TException>> settings = null, int index = -1)
+           where TException : Exception
+        {
+            builder.Services.Configure<RetryHandlerOptions<TException>>(opt => settings?.Invoke(opt));
+
+            builder.EnsureHandler<TException, RetryHandler<TException>>(index);
+
+            return builder;
+        }
+
         // Log
         public static IExceptionMapping<TException> Log<TException>(
             this IExceptionMapping<TException> builder, Action<LogHandlerOptions<TException>> settings = null, int index = -1)
             where TException : Exception
         {
-            builder.Services.Configure<LogHandlerOptions<TException>>(o =>
-            {
-                var ho = o as LogHandlerOptions<TException>;
-                settings?.Invoke(ho);
-            });
+            builder.Services.Configure<LogHandlerOptions<TException>>(opt => settings?.Invoke(opt));
 
             builder.EnsureHandler<TException, LogExceptionHandler<TException>>(index);
 
             return builder;
         }
 
+        public static IExceptionMapping<TException> DisableLog<TException>(
+            this IExceptionMapping<TException> builder, int index = -1)
+            where TException : Exception
+        {            
+            builder.EnsureHandler<TException, DisableLoggingHandler>(index);
+
+            return builder;
+        }
+
         // Set status code
-        public static IResponseHandlers<TException> NewResponse<TException>(
+        public static IResponseHandlers<TException> Response<TException>(
             this IExceptionMapping<TException> builder, 
             Func<TException,int> statusCodeFactory = null, 
             RequestStartedBehaviour requestStartedBehaviour = RequestStartedBehaviour.ReThrow, 
@@ -96,11 +123,10 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             {
                 responceOptions.RequestStartedBehaviour = requestStartedBehaviour;
                 responceOptions.SetResponse.Add((context, exception) =>
-                {
-                    if (context.Response.Body.CanSeek)
-                        context.Response.Body.SetLength(0L);
+                {                    
                     context.Response.StatusCode =
                         statusCodeFactory?.Invoke(exception) ?? (int) HttpStatusCode.InternalServerError;
+
                     return Task.CompletedTask;
                 });
             });
@@ -132,7 +158,12 @@ namespace Commmunity.AspNetCore.ExceptionHandling
         {
             builder.Services.Configure<RawResponseHandlerOptions<TException>>(responceOptions =>
             {
-                responceOptions.SetResponse.Add((context, exception) => settings(context.Response.Body, exception));
+                responceOptions.SetResponse.Add((context, exception) =>
+                {
+                    if (context.Response.Body.CanSeek)
+                        context.Response.Body.SetLength(0L);
+                    return settings(context.Response.Body, exception);
+                });
             });
 
             return builder;

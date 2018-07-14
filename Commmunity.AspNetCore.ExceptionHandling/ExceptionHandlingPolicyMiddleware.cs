@@ -12,6 +12,8 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 {
     public class ExceptionHandlingPolicyMiddleware : IMiddleware
     {
+        public const int MaxRetryIterations = 10;
+
         private readonly IOptions<ExceptionHandlingPolicyOptions> options;
 
         public ExceptionHandlingPolicyMiddleware(IOptions<ExceptionHandlingPolicyOptions> options)
@@ -19,15 +21,13 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             this.options = options ?? throw new ArgumentNullException(nameof(options));
         }       
 
-        private static async Task<bool> EnumerateExceptionMapping(
+        private static async Task<HandlerResult> EnumerateExceptionMapping(
             HttpContext context, 
             ExceptionHandlingPolicyOptions policyOptions,
-            Exception exception)
+            Exception exception,
+            ILogger logger)
         {
-            Type exceptionType = exception.GetType();
-
-            ILogger logger = context.RequestServices.GetService<ILogger<ExceptionHandlingPolicyMiddleware>>() ??
-                             NullLoggerFactory.Instance.CreateLogger(Const.Category);
+            Type exceptionType = exception.GetType();            
 
             bool mappingExists = false;
             HandlerResult handleResult = HandlerResult.ReThrow;
@@ -38,12 +38,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
                 {
                     mappingExists = true;
                     handleResult = await EnumerateHandlers(context, type, exception, policyOptions, logger);
-
-                    if (handleResult == HandlerResult.ReThrow)
-                    {
-                        return true;
-                    }
-
+                                        
                     if (handleResult != HandlerResult.NextChain)
                     {
                         break;
@@ -57,10 +52,10 @@ namespace Commmunity.AspNetCore.ExceptionHandling
                     "Handlers mapping for exception type {exceptionType} not exists. Exception will be re-thrown. RequestId: {RequestId}",
                     exceptionType, context.TraceIdentifier);
 
-                return false;
+                return HandlerResult.ReThrow;
             }
 
-            return handleResult == HandlerResult.ReThrow;
+            return handleResult;
         }
 
         private static async Task<HandlerResult> EnumerateHandlers(
@@ -124,6 +119,14 @@ namespace Commmunity.AspNetCore.ExceptionHandling
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
+            ILogger logger = context.RequestServices.GetService<ILogger<ExceptionHandlingPolicyMiddleware>>() ??
+                             NullLoggerFactory.Instance.CreateLogger(Const.Category);
+
+            await InvokeWithRetryAsync(context, next, logger, 0);
+        }   
+        
+        private async Task InvokeWithRetryAsync(HttpContext context, RequestDelegate next, ILogger logger, int iteration)
+        {
             try
             {
                 await next(context);
@@ -132,10 +135,53 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             {
                 ExceptionHandlingPolicyOptions policyOptions = this.options.Value;
 
-                bool throwRequired = await EnumerateExceptionMapping(context, policyOptions, exception);
+                var result = await EnumerateExceptionMapping(context, policyOptions, exception, logger);
 
-                if (throwRequired)
+                if (result == HandlerResult.ReThrow)
                 {
+                    throw;
+                }
+
+                if (result == HandlerResult.Retry)
+                {
+                    // We can't do anything if the response has already started, just abort.
+                    if (context.Response.HasStarted)
+                    {
+                        logger.LogWarning(Events.RetryForStartedResponce,
+                        exception,
+                            "Retry requested when responce already started. Exception will be re-thrown. RequestId: {RequestId}",
+                            context.TraceIdentifier);
+
+                        throw;
+                    }
+
+                    if (iteration > MaxRetryIterations)
+                    {
+                        logger.LogCritical(Events.RetryIterationExceedLimit,
+                        exception,
+                            "Retry iterations count exceed limit of {limit}. Possible issues with retry policy configuration. Exception will be re-thrown. RequestId: {RequestId}",
+                            MaxRetryIterations,
+                            context.TraceIdentifier);
+
+                        throw;
+                    }
+
+                    logger.LogWarning(Events.Retry,
+                        exception,
+                            "Retry requested. Iteration {iteration} RequestId: {RequestId}",
+                            iteration,
+                            context.TraceIdentifier);
+
+                    await InvokeWithRetryAsync(context, next, logger, iteration + 1);
+                }
+
+                if (result != HandlerResult.Handled)
+                {
+                    logger.LogWarning(Events.UnhandledResult,
+                        exception,
+                            "After execution of all handlers exception was not marked as handled and  will be re thrown. RequestId: {RequestId}",
+                            context.TraceIdentifier);
+
                     throw;
                 }
             }

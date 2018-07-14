@@ -4,6 +4,6 @@
     {
         ReThrow = 0,
 
-        Ignore = 1
+        SkipHandler = 1
     }
 }

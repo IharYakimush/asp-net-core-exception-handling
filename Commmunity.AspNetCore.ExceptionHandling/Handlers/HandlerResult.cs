@@ -8,6 +8,8 @@
 
         NextChain = 2,
 
-        Terminate = 3
+        Retry = 3,
+
+        Handled = 4
     }
 }

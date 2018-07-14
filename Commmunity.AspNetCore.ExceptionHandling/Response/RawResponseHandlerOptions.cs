@@ -13,5 +13,6 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
     {
         public List<Func<HttpContext, TException, Task>> SetResponse { get; set; } = new List<Func<HttpContext, TException, Task>>();
         public RawResponseHandlerOptions<TException> Value => this;
+        public RequestStartedBehaviour RequestStartedBehaviour { get; set; } = RequestStartedBehaviour.ReThrow;
     }
 }

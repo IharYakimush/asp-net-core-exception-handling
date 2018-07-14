@@ -23,6 +23,11 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Logs
         }
         public Task<HandlerResult> Handle(HttpContext httpContext, Exception exception)
         {
+            if (exception.Data.Contains(DisableLoggingHandler.DisableLoggingFlagKey))
+            {
+                return Task.FromResult(HandlerResult.NextHandler);
+            }
+
             ILoggerFactory loggerFactory =
                 httpContext.RequestServices.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
 

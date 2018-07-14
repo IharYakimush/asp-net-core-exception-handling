@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -29,9 +30,13 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
 
             services.AddExceptionHandlingPolicies(options =>
             {
+                options.For<DuplicateNameException>().Retry().NextChain();
+                options.For<DuplicateWaitObjectException>().Retry();
+                
                 options.For<ArgumentOutOfRangeException>().Log().Rethrow();
+                
                 options.For<InvalidCastException>()
-                    .NewResponse(e => 400)
+                    .Response(e => 400)
                     .WithHeaders((h, e) => h["X-qwe"] = e.Message)
                     .WithBody((stream, exception) =>
                     {
@@ -41,18 +46,17 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
                         }                                                
                     })
                     .NextChain();
-                options.For<Exception>().Log(lo =>
-                {
-                    lo.Formatter = (o, e) => "qwe";
-                })
-                    .NewResponse(e => 500, RequestStartedBehaviour.Ignore).WithBody(
+                options.For<Exception>()
+                    .Log(lo => { lo.Formatter = (o, e) => "qwe"; })
+                    .Response(e => 500, RequestStartedBehaviour.SkipHandler).WithBody(
                     async (stream, exception) =>
                     {
                         using (StreamWriter sw = new StreamWriter(stream))
                         {                            
                             await sw.WriteAsync("unhandled exception");
                         }
-                    });
+                    })
+                    .Handled();
             });
 
             services.AddLogging();
