@@ -31,21 +31,20 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
             services.AddExceptionHandlingPolicies(options =>
             {
                 options.For<DuplicateNameException>().Retry().NextChain();
+
                 options.For<DuplicateWaitObjectException>().Retry();
                 
                 options.For<ArgumentOutOfRangeException>().Log().Rethrow();
                 
                 options.For<InvalidCastException>()
                     .Response(e => 400)
-                    .WithHeaders((h, e) => h["X-qwe"] = e.Message)
-                    .WithBody((req,stream, exception) =>
-                    {
-                        using (StreamWriter sw = new StreamWriter(stream))
-                        {
-                            return sw.WriteAsync(exception.ToString());
-                        }                                                
+                    .Headers((h, e) => h["X-qwe"] = e.Message)
+                    .WithBody((req,sw, exception) =>
+                    {                       
+                        return sw.WriteAsync(exception.ToString());                                                                        
                     })
                     .NextChain();
+
                 options.For<Exception>()
                     .Log(lo => { lo.Formatter = (o, e) => "qwe"; })
                     .Response(e => 500, RequestStartedBehaviour.SkipHandler).ClearCacheHeaders().WithBodyJson((r, e) => new { msg = e.Message, path = r.Path })

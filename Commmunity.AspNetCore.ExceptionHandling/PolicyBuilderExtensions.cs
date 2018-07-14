@@ -136,7 +136,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             return builder as IResponseHandlers<TException>;
         }
 
-        public static IResponseHandlers<TException> WithHeaders<TException>(
+        public static IResponseHandlers<TException> Headers<TException>(
             this IResponseHandlers<TException> builder, Action<IHeaderDictionary,TException> settings, int index = -1)
             where TException : Exception
         {
@@ -180,22 +180,19 @@ namespace Commmunity.AspNetCore.ExceptionHandling
         }
 
         public static IResponseHandlers<TException> WithBody<TException>(
-            this IResponseHandlers<TException> builder, Func<HttpRequest, Stream, TException, Task> settings, int index = -1)
+            this IResponseHandlers<TException> builder, Func<HttpRequest, StreamWriter, TException, Task> settings, int index = -1)
             where TException : Exception
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
-            }
+            }            
 
             builder.Services.Configure<RawResponseHandlerOptions<TException>>(responceOptions =>
             {
                 responceOptions.SetResponse.Add((context, exception) =>
                 {
-                    if (context.Response.Body.CanSeek)
-                        context.Response.Body.SetLength(0L);
-
-                    return settings(context.Request,context.Response.Body, exception);
+                    return RawResponseExceptionHandler<TException>.SetBody(context, exception, settings);
                 });
             });
 
@@ -206,7 +203,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TObject> value, JsonSerializerSettings settings = null, int index = -1)
             where TException : Exception
         {
-            return builder.WithBody((request, stream, exception) =>
+            return builder.WithBody((request, streamWriter, exception) =>
             {
                 if (settings == null)
                 {                    
@@ -226,12 +223,23 @@ namespace Commmunity.AspNetCore.ExceptionHandling
                     headers[HeaderNames.ContentType] = "application/json";
                 }
 
-                using (TextWriter textWriter = new StreamWriter(stream))
-                {
-                    jsonSerializer.Serialize(textWriter, value(request, exception));
-                }
+                TObject val = value(request, exception);
 
-                return Task.CompletedTask;
+                //return Task.CompletedTask;
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (StreamWriter sw = new StreamWriter(ms, streamWriter.Encoding, 1024, true))
+                    {
+                        jsonSerializer.Serialize(sw, val);
+                    }
+
+                    ms.Seek(0, SeekOrigin.Begin);
+                    byte[] array = ms.ToArray();
+                    BinaryWriter binaryWriter = new BinaryWriter(streamWriter.BaseStream, streamWriter.Encoding, true);
+                    binaryWriter.Write(array);
+
+                    return Task.CompletedTask;
+                }
             });
         }
     }

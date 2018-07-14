@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Commmunity.AspNetCore.ExceptionHandling.Builder;
 using Commmunity.AspNetCore.ExceptionHandling.Handlers;
 using Commmunity.AspNetCore.ExceptionHandling.Logs;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +17,8 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
         where TException : Exception
     {
         public const string StatusCodeSetKey = "5D1CFED34A39";
+
+        public const string BodySetKey = "6D1CFED34A39";
 
         private readonly RawResponseHandlerOptions<TException> _options;
 
@@ -40,8 +45,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
                 else
                 {
                     return HandlerResult.NextHandler;
-                }
-                
+                }                
             }
             
             await HandleResponseAsync(httpContext, exception);
@@ -74,6 +78,32 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
             {
                 context.Response.StatusCode = statusCodeFactory.Invoke(exception);
                 context.Items[StatusCodeSetKey] = true;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public static Task SetBody<TException>(HttpContext context, TException exception, Func<HttpRequest, StreamWriter, TException, Task> settings) 
+        where TException : Exception
+        {
+            if (!context.Items.ContainsKey(BodySetKey))
+            {
+                context.Items[BodySetKey] = true;
+
+                Stream stream = context.Response.Body;
+
+                if (stream.CanSeek)
+                {
+                    stream.Seek(0, SeekOrigin.Begin);
+                    //stream.SetLength(0);
+                }
+
+                if (stream.CanWrite)
+                {
+                    StreamWriter writer = new StreamWriter(stream,Encoding.UTF8,1024, true);
+
+                    return settings(context.Request, writer, exception);                    
+                }
             }
 
             return Task.CompletedTask;

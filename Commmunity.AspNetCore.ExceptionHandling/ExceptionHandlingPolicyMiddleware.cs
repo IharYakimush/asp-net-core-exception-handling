@@ -172,6 +172,8 @@ namespace Commmunity.AspNetCore.ExceptionHandling
                             iteration,
                             context.TraceIdentifier);
 
+                    context.Response.Headers.Clear();
+
                     await InvokeWithRetryAsync(context, next, logger, iteration + 1);
                 }
 
