@@ -39,7 +39,8 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     app.UseMvc();
 }
 ```
-### Policy handlers transitions
+
+### Policy exception handler transitions
 When exception catched in middleware it try to apply handlers from first registered policy siutable for given exception. Policy contains a chain of handlers. Each handler perform some action and apply transition. To prevent re throw of exception handlers chain MUST ends with "Handled" transition.
 Following handlers currently supported:
 
@@ -53,4 +54,12 @@ Following handlers currently supported:
 | DisableFurtherLog  | Prevent exception from being logged again in current middleware (for current request only)  | NextHandler |
 | Response  | Modify response (set status code, headers and body) depending on further response builder configuration | NextHandler |
 
+Sample of transitions:
 ![alt text](/Transitions.png)
+
+### Nuget
+| Package  | Target | Comments |
+| ---------| ------------- | ------------- |
+| https://www.nuget.org/packages/Commmunity.AspNetCore.ExceptionHandling | netstandard2.0;netcoreapp2.1 | Main functionality |
+| https://www.nuget.org/packages/Commmunity.AspNetCore.ExceptionHandling.Mvc | netcoreapp2.1 | Alllow to use MVC IActionResult (including ObjectResult) in 'Response' handler |
+| https://www.nuget.org/packages/Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson | netstandard2.0; | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Commmunity.AspNetCore.ExceptionHandling.Mvc' usage not possible |
