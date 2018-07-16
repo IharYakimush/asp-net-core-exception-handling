@@ -83,8 +83,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
             return Task.CompletedTask;
         }
 
-        public static Task SetBody<TException>(HttpContext context, TException exception, Func<HttpRequest, StreamWriter, TException, Task> settings) 
-        where TException : Exception
+        public static Task SetBody(HttpContext context, TException exception, Func<HttpRequest, StreamWriter, TException, Task> settings) 
         {
             if (!context.Items.ContainsKey(BodySetKey))
             {

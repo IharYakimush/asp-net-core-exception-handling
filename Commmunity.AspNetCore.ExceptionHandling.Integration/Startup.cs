@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Commmunity.AspNetCore.ExceptionHandling.Mvc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -39,15 +40,13 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
                 options.For<InvalidCastException>()
                     .Response(e => 400)
                     .Headers((h, e) => h["X-qwe"] = e.Message)
-                    .WithBody((req,sw, exception) =>
-                    {                       
-                        return sw.WriteAsync(exception.ToString());                                                                        
-                    })
+                    .WithBody((req,sw, exception) => sw.WriteAsync(exception.ToString()))
                     .NextChain();
 
                 options.For<Exception>()
                     .Log(lo => { lo.Formatter = (o, e) => "qwe"; })
-                    .Response(e => 500, RequestStartedBehaviour.SkipHandler).ClearCacheHeaders().WithBodyJson((r, e) => new { msg = e.Message, path = r.Path })
+                    //.Response(e => 500, RequestStartedBehaviour.SkipHandler).ClearCacheHeaders().WithBodyJson((r, e) => new { msg = e.Message, path = r.Path })
+                    .Response(e => 500, RequestStartedBehaviour.SkipHandler).ClearCacheHeaders().WithBodyObjectResult((r, e) => new { msg = e.Message, path = r.Path })
                     .Handled();
             });
             
