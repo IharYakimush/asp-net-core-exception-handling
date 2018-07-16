@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Commmunity.AspNetCore.ExceptionHandling", "Commmunity.AspNetCore.ExceptionHandling\Commmunity.AspNetCore.ExceptionHandling.csproj", "{97ECCF71-494E-48FA-995A-AB1F13975A61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.AspNetCore.ExceptionHandling", "Community.AspNetCore.ExceptionHandling\Community.AspNetCore.ExceptionHandling.csproj", "{97ECCF71-494E-48FA-995A-AB1F13975A61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Commmunity.AspNetCore.ExceptionHandling.Integration", "Commmunity.AspNetCore.ExceptionHandling.Integration\Commmunity.AspNetCore.ExceptionHandling.Integration.csproj", "{393C6033-4255-43C3-896D-BFE30E264E4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.AspNetCore.ExceptionHandling.Integration", "Community.AspNetCore.ExceptionHandling.Integration\Community.AspNetCore.ExceptionHandling.Integration.csproj", "{393C6033-4255-43C3-896D-BFE30E264E4A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C825A429-B51F-4E5D-BC78-5E0A390D0C38}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,9 +15,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Transitions.vsdx = Transitions.vsdx
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Commmunity.AspNetCore.ExceptionHandling.Mvc", "Commmunity.AspNetCore.ExceptionHandling.Mvc\Commmunity.AspNetCore.ExceptionHandling.Mvc.csproj", "{0D080E5A-9500-43AC-88CD-069947CFA5EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.AspNetCore.ExceptionHandling.Mvc", "Community.AspNetCore.ExceptionHandling.Mvc\Community.AspNetCore.ExceptionHandling.Mvc.csproj", "{0D080E5A-9500-43AC-88CD-069947CFA5EF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson", "Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson\Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson.csproj", "{B3BAD0B5-15BC-46EE-A224-9DAF10376B81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.AspNetCore.ExceptionHandling.NewtonsoftJson", "Community.AspNetCore.ExceptionHandling.NewtonsoftJson\Community.AspNetCore.ExceptionHandling.NewtonsoftJson.csproj", "{B3BAD0B5-15BC-46EE-A224-9DAF10376B81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

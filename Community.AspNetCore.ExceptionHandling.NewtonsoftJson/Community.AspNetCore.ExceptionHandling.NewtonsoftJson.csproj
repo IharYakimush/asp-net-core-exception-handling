@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Commmunity.AspNetCore.ExceptionHandling\Commmunity.AspNetCore.ExceptionHandling.csproj" />
+    <ProjectReference Include="..\Commmunity.AspNetCore.ExceptionHandling\Community.AspNetCore.ExceptionHandling.csproj" />
   </ItemGroup>
 
 </Project>
