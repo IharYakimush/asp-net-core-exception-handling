@@ -1,3 +1,3 @@
-dotnet restore .\Commmunity.AspNetCore.sln
+dotnet restore .\Community.AspNetCore.sln
 
-dotnet build .\Commmunity.AspNetCore.sln -c Release
+dotnet build .\Community.AspNetCore.sln -c Release
