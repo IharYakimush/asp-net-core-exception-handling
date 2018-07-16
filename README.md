@@ -11,7 +11,7 @@ public void ConfigureServices(IServiceCollection services)
     {
         options.For<InitializationException>().Rethrow();
                 
-        options.For<SomeTransientException>().Retry().NextChain();
+        options.For<SomeTransientException>().Retry(ro => ro.MaxRetryCount = 2).NextChain();
                 
         options.For<SomeBadRequestException>()
             .Response(e => 400)
