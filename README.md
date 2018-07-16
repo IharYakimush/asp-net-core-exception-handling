@@ -11,13 +11,13 @@ public void ConfigureServices(IServiceCollection services)
     {
         options.For<InitializationException>().Rethrow();
                 
-        options.For<SomeTransientException>().Retry(ro => ro.MaxRetryCount = 2).NextChain();
+        options.For<SomeTransientException>().Retry(ro => ro.MaxRetryCount = 2).NextPolicy();
                 
         options.For<SomeBadRequestException>()
             .Response(e => 400)
                 .Headers((h, e) => h["X-MyCustomHeader"] = e.Message)
                 .WithBody((req,sw, exception) => sw.WriteAsync(exception.ToString()))
-            .NextChain();
+            .NextPolicy();
 
         // Ensure that all exception types are handled by adding handler for generic exception at the end.
         options.For<Exception>()
