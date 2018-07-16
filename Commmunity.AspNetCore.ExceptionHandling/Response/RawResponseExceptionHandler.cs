@@ -34,7 +34,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
         {
             if (httpContext.Response.HasStarted)
             {
-                if (this._options.RequestStartedBehaviour == RequestStartedBehaviour.ReThrow)
+                if (this._options.ResponseAlreadyStartedBehaviour == ResponseAlreadyStartedBehaviour.ReThrow)
                 {
                     this.Logger.LogError(ResponseHasStarted,
                         "Unable to execute {handletType} handler, because respnse already started. Exception will be re-thrown.",

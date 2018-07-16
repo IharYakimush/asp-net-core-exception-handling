@@ -45,8 +45,8 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
 
                 options.For<Exception>()
                     .Log(lo => { lo.Formatter = (o, e) => "qwe"; })
-                    //.Response(e => 500, RequestStartedBehaviour.SkipHandler).ClearCacheHeaders().WithBodyJson((r, e) => new { msg = e.Message, path = r.Path })
-                    .Response(e => 500, RequestStartedBehaviour.SkipHandler).ClearCacheHeaders().WithBodyObjectResult((r, e) => new { msg = e.Message, path = r.Path })
+                    //.Response(e => 500, ResponseAlreadyStartedBehaviour.GoToNextHandler).ClearCacheHeaders().WithBodyJson((r, e) => new { msg = e.Message, path = r.Path })
+                    .Response(e => 500, ResponseAlreadyStartedBehaviour.GoToNextHandler).ClearCacheHeaders().WithObjectResult((r, e) => new { msg = e.Message, path = r.Path })
                     .Handled();
             });
             

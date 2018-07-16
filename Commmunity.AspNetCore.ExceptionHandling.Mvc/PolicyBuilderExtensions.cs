@@ -15,7 +15,28 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Mvc
 
         private static readonly ActionDescriptor EmptyActionDescriptor = new ActionDescriptor();
 
-        public static IResponseHandlers<TException> WithBodyActionResult<TException, TResult>(
+        /// <summary>
+        /// Set <see cref="IActionResult"/> to response and pass control to next handler.
+        /// </summary>
+        /// <typeparam name="TException">
+        /// The exception type
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The action result type. Should implement <see cref="IActionResult"/>.
+        /// </typeparam>
+        /// <param name="builder">
+        /// The policy builder 
+        /// </param>
+        /// <param name="resultFactory">
+        /// The <see cref="IActionResult"/> factory.
+        /// </param>
+        /// <param name="index" optional="true">
+        /// Handler index in the chain. Optional. By default handler added to the end of chain.
+        /// </param>
+        /// <returns>
+        /// Policy builder
+        /// </returns>
+        public static IResponseHandlers<TException> WithActionResult<TException, TResult>(
             this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TResult> resultFactory, int index = -1)
             where TException : Exception
         where TResult : IActionResult
@@ -38,26 +59,89 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Mvc
             });
         }
 
-        public static IResponseHandlers<TException> WithBodyActionResult<TException, TResult>(
+        /// <summary>
+        /// Set <see cref="IActionResult"/> to response and pass control to next handler.
+        /// </summary>
+        /// <typeparam name="TException">
+        /// The exception type
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The action result type. Should implement <see cref="IActionResult"/>.
+        /// </typeparam>
+        /// <param name="builder">
+        /// The policy builder 
+        /// </param>
+        /// <param name="result">
+        /// The <see cref="IActionResult"/> action result.
+        /// </param>
+        /// <param name="index" optional="true">
+        /// Handler index in the chain. Optional. By default handler added to the end of chain.
+        /// </param>
+        /// <returns>
+        /// Policy builder
+        /// </returns>
+        public static IResponseHandlers<TException> WithActionResult<TException, TResult>(
             this IResponseHandlers<TException> builder, TResult result, int index = -1)
             where TException : Exception
             where TResult : IActionResult
         {
-            return builder.WithBodyActionResult((request, exception) => result);
+            return builder.WithActionResult((request, exception) => result);
         }
 
-        public static IResponseHandlers<TException> WithBodyObjectResult<TException, TObject>(
+        /// <summary>
+        /// Set <see cref="ObjectResult"/> to response and pass control to next handler.
+        /// </summary>
+        /// <typeparam name="TException">
+        /// The exception type
+        /// </typeparam>
+        /// <typeparam name="TObject">
+        /// The result object type.
+        /// </typeparam>
+        /// <param name="builder">
+        /// The policy builder 
+        /// </param>
+        /// <param name="value">
+        /// The result object.
+        /// </param>
+        /// <param name="index" optional="true">
+        /// Handler index in the chain. Optional. By default handler added to the end of chain.
+        /// </param>
+        /// <returns>
+        /// Policy builder
+        /// </returns>
+        public static IResponseHandlers<TException> WithObjectResult<TException, TObject>(
             this IResponseHandlers<TException> builder, TObject value, int index = -1)
             where TException : Exception
         {
-            return builder.WithBodyActionResult(new ObjectResult(value), index);
+            return builder.WithActionResult(new ObjectResult(value), index);
         }
 
-        public static IResponseHandlers<TException> WithBodyObjectResult<TException, TObject>(
+        /// <summary>
+        /// Set <see cref="ObjectResult"/> to response and pass control to next handler.
+        /// </summary>
+        /// <typeparam name="TException">
+        /// The exception type
+        /// </typeparam>
+        /// <typeparam name="TObject">
+        /// The result object type.
+        /// </typeparam>
+        /// <param name="builder">
+        /// The policy builder 
+        /// </param>
+        /// <param name="valueFactory">
+        /// The result object factory.
+        /// </param>
+        /// <param name="index" optional="true">
+        /// Handler index in the chain. Optional. By default handler added to the end of chain.
+        /// </param>
+        /// <returns>
+        /// Policy builder
+        /// </returns>
+        public static IResponseHandlers<TException> WithObjectResult<TException, TObject>(
             this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TObject> valueFactory, int index = -1)
             where TException : Exception
         {
-            return builder.WithBodyActionResult(
+            return builder.WithActionResult(
                 (request, exception) => new ObjectResult(valueFactory(request, exception)), index);
         }
     }

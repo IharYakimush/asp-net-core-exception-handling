@@ -23,17 +23,23 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Logs
         }
         public Task<HandlerResult> Handle(HttpContext httpContext, Exception exception)
         {
+            var logLevel = this.Settings.Level?.Invoke(httpContext, exception) ?? LogLevel.Error;
+
+            if (logLevel == LogLevel.None)
+            {
+                return Task.FromResult(HandlerResult.NextHandler);
+            }
+
             if (exception.Data.Contains(DisableLoggingHandler.DisableLoggingFlagKey))
             {
                 return Task.FromResult(HandlerResult.NextHandler);
             }
 
-            ILoggerFactory loggerFactory =
-                httpContext.RequestServices.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
-
-            if (loggerFactory != null)
+            if (httpContext.RequestServices.GetService(typeof(ILoggerFactory)) is ILoggerFactory loggerFactory)
             {
-                ILogger logger = loggerFactory.CreateLogger(this.Settings.Category ?? Const.Category);
+                ILogger logger =
+                    loggerFactory.CreateLogger(this.Settings.Category?.Invoke(httpContext, exception) ??
+                                               Const.Category);
 
                 EventId eventId = this.Settings.EventIdFactory != null
                     ? this.Settings.EventIdFactory(httpContext, exception)
@@ -45,7 +51,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Logs
 
                 Func<object, Exception, string> formatter = this.Settings.Formatter ?? ((o, e) => o.ToString());
 
-                logger.Log(this.Settings.Level, eventId, state, exception, formatter);                
+                logger.Log(logLevel, eventId, state, exception, formatter);                
             }
             
             return Task.FromResult(HandlerResult.NextHandler);

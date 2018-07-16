@@ -11,9 +11,33 @@ namespace Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson
 {
     public static class PolicyBuilderExtensions
     {
+        /// <summary>
+        /// Write serialized object to response using <see cref="JsonSerializer"/> and pass control to next handler.
+        /// </summary>
+        /// <typeparam name="TException">
+        /// The exception type
+        /// </typeparam>
+        /// <typeparam name="TObject">
+        /// The result object type.
+        /// </typeparam>
+        /// <param name="builder">
+        /// The policy builder 
+        /// </param>
+        /// <param name="valueFactory">
+        /// The result object factory.
+        /// </param>
+        /// <param name="settings">
+        /// The JSON serializer settings <see cref="JsonSerializerSettings"/>.
+        /// </param>
+        /// <param name="index" optional="true">
+        /// Handler index in the chain. Optional. By default handler added to the end of chain.
+        /// </param>
+        /// <returns>
+        /// Policy builder
+        /// </returns>
         [Obsolete("In case of using netcore2.1+ use Commmunity.AspNetCore.ExceptionHandling.Mvc instead")]
         public static IResponseHandlers<TException> WithBodyJson<TException, TObject>(
-            this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TObject> value, JsonSerializerSettings settings = null, int index = -1)
+            this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TObject> valueFactory, JsonSerializerSettings settings = null, int index = -1)
             where TException : Exception
         {
             return builder.WithBody((request, streamWriter, exception) =>
@@ -36,7 +60,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson
                     headers[HeaderNames.ContentType] = "application/json";
                 }
 
-                TObject val = value(request, exception);
+                TObject val = valueFactory(request, exception);
 
                 //return Task.CompletedTask;
                 using (MemoryStream ms = new MemoryStream())

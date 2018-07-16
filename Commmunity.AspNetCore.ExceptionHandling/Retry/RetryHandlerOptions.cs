@@ -10,8 +10,14 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Retry
     {
         public RetryHandlerOptions<TException> Value => this;
 
-        public RequestStartedBehaviour RequestStartedBehaviour { get; set; } = RequestStartedBehaviour.ReThrow;
+        /// <summary>
+        /// The behaviour in case of retry can't be executed due to responce already started. Default: re throw.
+        /// </summary>
+        public ResponseAlreadyStartedBehaviour ResponseAlreadyStartedBehaviour { get; set; } = ResponseAlreadyStartedBehaviour.ReThrow;
 
+        /// <summary>
+        /// Max retry count
+        /// </summary>
         public int MaxRetryCount { get; set; } = 1;
     }
 }
