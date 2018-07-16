@@ -60,6 +60,6 @@ Sample of transitions:
 ### Nuget
 | Package  | Target | Comments |
 | ---------| ------------- | ------------- |
-| Commmunity.AspNetCore.ExceptionHandling | netstandard2.0;netcoreapp2.1 | Main functionality |
+| Commmunity.AspNetCore.ExceptionHandling | netstandard2.0 netcoreapp2.1 | Main functionality |
 | Commmunity.AspNetCore.ExceptionHandling.Mvc | netcoreapp2.1 | Alllow to use MVC IActionResult (including ObjectResult) in 'Response' handler |
-| Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson | netstandard2.0; | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Commmunity.AspNetCore.ExceptionHandling.Mvc' usage not possible |
+| Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson | netstandard2.0 | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Commmunity.AspNetCore.ExceptionHandling.Mvc' usage not possible |
