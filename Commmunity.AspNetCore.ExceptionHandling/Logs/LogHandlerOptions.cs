@@ -35,7 +35,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Logs
         /// <summary>
         /// Factory for log category. By default "Commmunity.AspNetCore.ExceptionHandling" will be used.
         /// </summary>
-        public Func<HttpContext,Exception,string> Category { get; set; }
+        public Func<HttpContext, Exception, string> Category { get; set; }
 
         /// <summary>
         /// Factory for <see cref="LogLevel"/> log level. By default <see cref="LogLevel.Error"/> error will be used. In case of <see cref="LogLevel.None"/> none log entry will be skipped.

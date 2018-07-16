@@ -94,14 +94,18 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
                 if (stream.CanSeek)
                 {
                     stream.Seek(0, SeekOrigin.Begin);
-                    //stream.SetLength(0);
+                    stream.SetLength(0);
                 }
 
                 if (stream.CanWrite)
                 {
-                    StreamWriter writer = new StreamWriter(stream,Encoding.UTF8,1024, true);
+                    StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 1024, true);
 
                     return settings(context.Request, writer, exception);                    
+                }
+                else
+                {
+                    throw new InvalidOperationException("Unable to write to response stream");
                 }
             }
 
