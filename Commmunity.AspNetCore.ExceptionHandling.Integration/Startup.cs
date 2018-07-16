@@ -31,7 +31,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
 
             services.AddExceptionHandlingPolicies(options =>
             {
-                options.For<DuplicateNameException>().Retry().NextChain();
+                options.For<DuplicateNameException>().Retry().NextPolicy();
 
                 options.For<DuplicateWaitObjectException>().Retry();
                 
@@ -41,7 +41,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
                     .Response(e => 400)
                     .Headers((h, e) => h["X-qwe"] = e.Message)
                     .WithBody((req,sw, exception) => sw.WriteAsync(exception.ToString()))
-                    .NextChain();
+                    .NextPolicy();
 
                 options.For<Exception>()
                     .Log(lo => { lo.Formatter = (o, e) => "qwe"; })

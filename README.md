@@ -1,7 +1,7 @@
 # AspNetCore-ExceptionHandling
 Middleware to configure exception handling policies. Configure chain of handlers per exception type. OOTB handlers: log, retry, set responce headers and body
 
-### Sample
+### Code Sample
 ```
 public void ConfigureServices(IServiceCollection services)
 {
@@ -39,3 +39,18 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     app.UseMvc();
 }
 ```
+### Policy handlers transitions
+When exception catched in middleware it try to apply handlers from first registered policy siutable for given exception. Policy contains a chain of handlers. Each handler perform some action and apply transition. To prevent re throw of exception handlers chain MUST ends with "Handled" transition.
+Following handlers currently supported:
+
+| Handler  | Action | Transition |
+| ---------| ------------- | ------------- |
+| Rethrow  | Apply ReThrow transition  | ReThrow |
+| NextPolicy  | Try to execute next policy siutable for given exception  | NextPolicy |
+| Handled  | Mark exception as handled to prevent it from bein re thrown  | Handled |
+| Retry  | Execute aspnetcore pipeline again if retry count not exceed limit  | Retry (if retry limit not exceeded) or NextHandler |
+| Log  | Log exception  | NextHandler |
+| DisableFurtherLog  | Prevent exception from being logged again in current middleware (for current request only)  | NextHandler |
+| Response  | Modify response (set status code, headers and body) depending on further response builder configuration | NextHandler |
+
+![alt text](/Transitions.png)

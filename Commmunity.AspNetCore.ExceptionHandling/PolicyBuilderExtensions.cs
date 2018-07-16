@@ -90,7 +90,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
         /// <returns>
         /// Policy builder
         /// </returns>
-        public static IExceptionPolicyBuilder NextChain<TException>(
+        public static IExceptionPolicyBuilder NextPolicy<TException>(
             this IExceptionMapping<TException> builder, int index = -1)
             where TException : Exception
         {
