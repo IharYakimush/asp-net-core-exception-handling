@@ -1,5 +1,5 @@
-# AspNetCore-ExceptionHandling
-Middleware to configure exception handling policies. Configure chain of handlers per exception type. OOTB handlers: log, retry, set responce headers and body
+# AspNetCore Exception Handling
+Middleware to configure AspNetCore exception handling policies. Allows to set a chain of exception handlers per exception type. OOTB handlers: log, retry, set responce headers and body
 
 ### Code Sample
 ```
