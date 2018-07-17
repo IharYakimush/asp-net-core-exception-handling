@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using Community.AspNetCore.ExceptionHandling.Mvc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

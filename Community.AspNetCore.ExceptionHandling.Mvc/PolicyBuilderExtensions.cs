@@ -1,4 +1,5 @@
 ﻿using System;
+using Community.AspNetCore.ExceptionHandling.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
