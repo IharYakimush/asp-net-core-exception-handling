@@ -1,5 +1,4 @@
 ﻿using System;
-using Commmunity.AspNetCore.ExceptionHandling.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -7,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Mvc
+namespace Community.AspNetCore.ExceptionHandling.Mvc
 {
     public static class PolicyBuilderExtensions
     {
@@ -44,14 +43,14 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Mvc
             return builder.WithBody((request, streamWriter, exception) =>
             {
                 var context = request.HttpContext;
-                var executor = context.RequestServices.GetService<IActionResultExecutor<TResult>>();
+                var executor = ServiceProviderServiceExtensions.GetService<IActionResultExecutor<TResult>>(context.RequestServices);
 
                 if (executor == null)
                 {
                     throw new InvalidOperationException($"No result executor for '{typeof(TResult).FullName}' has been registered.");
                 }
 
-                var routeData = context.GetRouteData() ?? EmptyRouteData;
+                var routeData = RoutingHttpContextExtensions.GetRouteData(context) ?? EmptyRouteData;
 
                 var actionContext = new ActionContext(context, routeData, EmptyActionDescriptor);
 
@@ -85,7 +84,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Mvc
             where TException : Exception
             where TResult : IActionResult
         {
-            return builder.WithActionResult((request, exception) => result);
+            return WithActionResult<TException, TResult>(builder, (request, exception) => result);
         }
 
         /// <summary>
@@ -113,7 +112,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Mvc
             this IResponseHandlers<TException> builder, TObject value, int index = -1)
             where TException : Exception
         {
-            return builder.WithActionResult(new ObjectResult(value), index);
+            return WithActionResult<TException, ObjectResult>(builder, new ObjectResult(value), index);
         }
 
         /// <summary>
@@ -141,8 +140,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Mvc
             this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TObject> valueFactory, int index = -1)
             where TException : Exception
         {
-            return builder.WithActionResult(
-                (request, exception) => new ObjectResult(valueFactory(request, exception)), index);
+            return WithActionResult<TException, ObjectResult>(builder, (request, exception) => new ObjectResult(valueFactory(request, exception)), index);
         }
     }
 }

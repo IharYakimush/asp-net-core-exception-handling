@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Builder
+namespace Community.AspNetCore.ExceptionHandling.Builder
 {
     public interface IExceptionMapping<TException> : IExceptionPolicyBuilder
     where TException : Exception

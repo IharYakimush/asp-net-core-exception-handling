@@ -1,4 +1,4 @@
-﻿namespace Commmunity.AspNetCore.ExceptionHandling.Handlers
+﻿namespace Community.AspNetCore.ExceptionHandling.Handlers
 {
     public enum HandlerResult
     {

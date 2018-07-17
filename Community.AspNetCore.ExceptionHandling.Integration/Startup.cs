@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Mvc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Integration
+namespace Community.AspNetCore.ExceptionHandling.Integration
 {
     public class Startup
     {

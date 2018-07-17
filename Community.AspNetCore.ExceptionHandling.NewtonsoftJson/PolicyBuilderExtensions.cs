@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Builder;
+using Community.AspNetCore.ExceptionHandling.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson
+namespace Community.AspNetCore.ExceptionHandling.NewtonsoftJson
 {
     public static class PolicyBuilderExtensions
     {

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Handlers;
+using Community.AspNetCore.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Internal;
 using Microsoft.Extensions.Options;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Logs
+namespace Community.AspNetCore.ExceptionHandling.Logs
 {
     public class LogExceptionHandler<TException> : HandlerStrongType<TException>
     where TException : Exception

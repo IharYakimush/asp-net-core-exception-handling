@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Handlers;
+using Community.AspNetCore.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Logs
+namespace Community.AspNetCore.ExceptionHandling.Logs
 {
     class DisableLoggingHandler : IExceptionHandler
     {

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Handlers;
+using Community.AspNetCore.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Retry
+namespace Community.AspNetCore.ExceptionHandling.Retry
 {
     class RetryHandler<TException> : IExceptionHandler
     where TException : Exception

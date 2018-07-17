@@ -2,16 +2,13 @@
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Builder;
-using Commmunity.AspNetCore.ExceptionHandling.Handlers;
-using Commmunity.AspNetCore.ExceptionHandling.Logs;
+using Community.AspNetCore.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Response
+namespace Community.AspNetCore.ExceptionHandling.Response
 {
     public class RawResponseExceptionHandler<TException> : HandlerStrongType<TException>
         where TException : Exception

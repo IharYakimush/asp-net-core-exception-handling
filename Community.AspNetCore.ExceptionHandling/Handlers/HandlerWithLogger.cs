@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Handlers
+namespace Community.AspNetCore.ExceptionHandling.Handlers
 {
     public class HandlerWithLogger
     {

@@ -1,11 +1,11 @@
 ﻿using System;
-using Commmunity.AspNetCore.ExceptionHandling.Builder;
+using Community.AspNetCore.ExceptionHandling.Builder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
-namespace Commmunity.AspNetCore.ExceptionHandling
+namespace Community.AspNetCore.ExceptionHandling
 {
     //TODO: add warning for policy override
     //TODO: add response handler

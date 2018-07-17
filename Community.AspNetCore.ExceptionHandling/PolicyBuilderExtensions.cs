@@ -1,18 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Builder;
-using Commmunity.AspNetCore.ExceptionHandling.Exc;
-using Commmunity.AspNetCore.ExceptionHandling.Handlers;
-using Commmunity.AspNetCore.ExceptionHandling.Logs;
-using Commmunity.AspNetCore.ExceptionHandling.Response;
-using Commmunity.AspNetCore.ExceptionHandling.Retry;
+using Community.AspNetCore.ExceptionHandling.Builder;
+using Community.AspNetCore.ExceptionHandling.Exc;
+using Community.AspNetCore.ExceptionHandling.Handlers;
+using Community.AspNetCore.ExceptionHandling.Logs;
+using Community.AspNetCore.ExceptionHandling.Response;
+using Community.AspNetCore.ExceptionHandling.Retry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Net.Http.Headers;
 
-namespace Commmunity.AspNetCore.ExceptionHandling
+namespace Community.AspNetCore.ExceptionHandling
 {
     public static class PolicyBuilderExtensions
     {

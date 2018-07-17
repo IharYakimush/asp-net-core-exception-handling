@@ -1,8 +1,8 @@
-﻿namespace Commmunity.AspNetCore.ExceptionHandling.Builder
-{
-    using System;
-    using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
+namespace Community.AspNetCore.ExceptionHandling.Builder
+{
     public class ExceptionMapping<TException> : IExceptionPolicyBuilder, IExceptionMapping<TException>, IResponseHandlers<TException>
         where TException : Exception
     {
