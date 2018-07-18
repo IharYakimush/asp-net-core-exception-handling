@@ -2,6 +2,6 @@
 {
     public static class Const
     {
-        public const string Category = "Commmunity.AspNetCore.ExceptionHandling";
+        public const string Category = "Community.AspNetCore.ExceptionHandling";
     }
 }

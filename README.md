@@ -16,7 +16,11 @@ public void ConfigureServices(IServiceCollection services)
         options.For<SomeBadRequestException>()
             .Response(e => 400)
                 .Headers((h, e) => h["X-MyCustomHeader"] = e.Message)
-                .WithBody((req,sw, exception) => sw.WriteAsync(exception.ToString()))
+				.WithBody((req,sw, exception) =>
+                    {
+                        byte[] array = Encoding.UTF8.GetBytes(exception.ToString());
+                        return sw.WriteAsync(array, 0, array.Length);
+                    })
             .NextPolicy();
 
         // Ensure that all exception types are handled by adding handler for generic exception at the end.
@@ -62,4 +66,4 @@ Sample of transitions:
 | ---------| ------------- | ------------- |
 | Community.AspNetCore.ExceptionHandling | netstandard2.0 netcoreapp2.1 | Main functionality |
 | Community.AspNetCore.ExceptionHandling.Mvc | netcoreapp2.1 | Alllow to use MVC IActionResult (including ObjectResult) in 'Response' handler |
-| Community.AspNetCore.ExceptionHandling.NewtonsoftJson | netstandard2.0 | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Commmunity.AspNetCore.ExceptionHandling.Mvc' usage not possible |
+| Community.AspNetCore.ExceptionHandling.NewtonsoftJson | netstandard2.0 | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Community.AspNetCore.ExceptionHandling.Mvc' usage not possible |

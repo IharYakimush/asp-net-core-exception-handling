@@ -34,7 +34,7 @@ namespace Community.AspNetCore.ExceptionHandling.Logs
         public Func<HttpContext, TException, LogHandlerOptions<TException>, object> StateFactory { get; set; }
 
         /// <summary>
-        /// Factory for log category. By default "Commmunity.AspNetCore.ExceptionHandling" will be used.
+        /// Factory for log category. By default "Community.AspNetCore.ExceptionHandling" will be used.
         /// </summary>
         public Func<HttpContext, TException, string> Category { get; set; }
 

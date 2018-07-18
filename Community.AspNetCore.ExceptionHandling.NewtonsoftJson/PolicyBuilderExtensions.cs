@@ -36,7 +36,7 @@ namespace Community.AspNetCore.ExceptionHandling.NewtonsoftJson
         /// <returns>
         /// Policy builder
         /// </returns>
-        [Obsolete("In case of using netcore2.1+ use Commmunity.AspNetCore.ExceptionHandling.Mvc instead")]
+        [Obsolete("In case of using netcore2.1+ use Community.AspNetCore.ExceptionHandling.Mvc instead")]
         public static IResponseHandlers<TException> WithBodyJson<TException, TObject>(
             this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TObject> valueFactory, JsonSerializerSettings settings = null, int index = -1)
             where TException : Exception
