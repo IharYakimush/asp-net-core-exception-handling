@@ -7,12 +7,7 @@ namespace Community.AspNetCore.ExceptionHandling.Retry
     where TException : Exception
     {
         public RetryHandlerOptions<TException> Value => this;
-
-        /// <summary>
-        /// The behaviour in case of retry can't be executed due to responce already started. Default: re throw.
-        /// </summary>
-        public ResponseAlreadyStartedBehaviour ResponseAlreadyStartedBehaviour { get; set; } = ResponseAlreadyStartedBehaviour.ReThrow;
-
+        
         /// <summary>
         /// Max retry count
         /// </summary>

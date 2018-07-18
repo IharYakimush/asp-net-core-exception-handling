@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Community.AspNetCore.ExceptionHandling.Builder;
 using Microsoft.AspNetCore.Http;
@@ -40,7 +41,7 @@ namespace Community.AspNetCore.ExceptionHandling.NewtonsoftJson
             this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TObject> valueFactory, JsonSerializerSettings settings = null, int index = -1)
             where TException : Exception
         {
-            return builder.WithBody((request, streamWriter, exception) =>
+            return builder.WithBody((request, stream, exception) =>
             {
                 if (settings == null)
                 {
@@ -65,15 +66,14 @@ namespace Community.AspNetCore.ExceptionHandling.NewtonsoftJson
                 //return Task.CompletedTask;
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    using (StreamWriter sw = new StreamWriter(ms, streamWriter.Encoding, 1024, true))
+                    using (StreamWriter sw = new StreamWriter(ms, Encoding.UTF8, 1024, true))
                     {
                         jsonSerializer.Serialize(sw, val);
                     }
 
                     ms.Seek(0, SeekOrigin.Begin);
                     byte[] array = ms.ToArray();
-                    BinaryWriter binaryWriter = new BinaryWriter(streamWriter.BaseStream, streamWriter.Encoding, true);
-                    binaryWriter.Write(array);
+                    stream.WriteAsync(array, 0, array.Length);                    
 
                     return Task.CompletedTask;
                 }

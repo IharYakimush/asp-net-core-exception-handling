@@ -44,14 +44,14 @@ namespace Community.AspNetCore.ExceptionHandling.Mvc
             return builder.WithBody((request, streamWriter, exception) =>
             {
                 var context = request.HttpContext;
-                var executor = ServiceProviderServiceExtensions.GetService<IActionResultExecutor<TResult>>(context.RequestServices);
+                var executor = context.RequestServices.GetService<IActionResultExecutor<TResult>>();
 
                 if (executor == null)
                 {
                     throw new InvalidOperationException($"No result executor for '{typeof(TResult).FullName}' has been registered.");
                 }
 
-                var routeData = RoutingHttpContextExtensions.GetRouteData(context) ?? EmptyRouteData;
+                var routeData = context.GetRouteData() ?? EmptyRouteData;
 
                 var actionContext = new ActionContext(context, routeData, EmptyActionDescriptor);
 
@@ -85,7 +85,7 @@ namespace Community.AspNetCore.ExceptionHandling.Mvc
             where TException : Exception
             where TResult : IActionResult
         {
-            return WithActionResult<TException, TResult>(builder, (request, exception) => result);
+            return WithActionResult(builder, (request, exception) => result);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Community.AspNetCore.ExceptionHandling.Mvc
             this IResponseHandlers<TException> builder, TObject value, int index = -1)
             where TException : Exception
         {
-            return WithActionResult<TException, ObjectResult>(builder, new ObjectResult(value), index);
+            return WithActionResult(builder, new ObjectResult(value), index);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace Community.AspNetCore.ExceptionHandling.Mvc
             this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TObject> valueFactory, int index = -1)
             where TException : Exception
         {
-            return WithActionResult<TException, ObjectResult>(builder, (request, exception) => new ObjectResult(valueFactory(request, exception)), index);
+            return WithActionResult(builder, (request, exception) => new ObjectResult(valueFactory(request, exception)), index);
         }
     }
 }

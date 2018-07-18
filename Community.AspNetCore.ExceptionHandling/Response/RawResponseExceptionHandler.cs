@@ -80,7 +80,7 @@ namespace Community.AspNetCore.ExceptionHandling.Response
             return Task.CompletedTask;
         }
 
-        public static Task SetBody(HttpContext context, TException exception, Func<HttpRequest, StreamWriter, TException, Task> settings) 
+        public static Task SetBody(HttpContext context, TException exception, Func<HttpRequest, Stream, TException, Task> settings) 
         {
             if (!context.Items.ContainsKey(BodySetKey))
             {
@@ -96,9 +96,7 @@ namespace Community.AspNetCore.ExceptionHandling.Response
 
                 if (stream.CanWrite)
                 {
-                    StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 1024, true);
-
-                    return settings(context.Request, writer, exception);                    
+                    return settings(context.Request, stream, exception);                    
                 }
                 else
                 {

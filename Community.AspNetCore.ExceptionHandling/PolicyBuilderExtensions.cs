@@ -335,7 +335,7 @@ namespace Community.AspNetCore.ExceptionHandling
         /// The policy builder 
         /// </param>
         /// <param name="settings">
-        /// Delegate to write response using <see cref="StreamWriter"/>.
+        /// Delegate to write to response stream.
         /// </param>
         /// <param name="index" optional="true">
         /// Handler index in the chain. Optional. By default handler added to the end of chain.
@@ -344,7 +344,7 @@ namespace Community.AspNetCore.ExceptionHandling
         /// Policy builder
         /// </returns>
         public static IResponseHandlers<TException> WithBody<TException>(
-            this IResponseHandlers<TException> builder, Func<HttpRequest, StreamWriter, TException, Task> settings, int index = -1)
+            this IResponseHandlers<TException> builder, Func<HttpRequest, Stream, TException, Task> settings, int index = -1)
             where TException : Exception
         {
             if (settings == null)
@@ -353,12 +353,10 @@ namespace Community.AspNetCore.ExceptionHandling
             }            
 
             builder.Services.Configure<RawResponseHandlerOptions<TException>>(responceOptions =>
-            {
-                responceOptions.SetResponse.Add((context, exception) =>
                 {
-                    return RawResponseExceptionHandler<TException>.SetBody(context, exception, settings);
+                    responceOptions.SetResponse.Add((context, exception) =>
+                        RawResponseExceptionHandler<TException>.SetBody(context, exception, settings));
                 });
-            });
 
             return builder;
         }        
