@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Commmunity.AspNetCore.ExceptionHandling
+namespace Community.AspNetCore.ExceptionHandling
 {
     public static class Events
     {

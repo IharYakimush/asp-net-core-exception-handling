@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Handlers;
+using Community.AspNetCore.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
-namespace Commmunity.AspNetCore.ExceptionHandling
+namespace Community.AspNetCore.ExceptionHandling
 {
     public class ExceptionHandlingPolicyMiddleware : IMiddleware
     {

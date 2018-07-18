@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using Microsoft.Extensions.Options;
 
-namespace Commmunity.AspNetCore.ExceptionHandling
+namespace Community.AspNetCore.ExceptionHandling
 {
     public class ExceptionHandlingPolicyOptions : IOptions<ExceptionHandlingPolicyOptions>
     {

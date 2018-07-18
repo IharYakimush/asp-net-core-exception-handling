@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Buffering" Version="0.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="2.1.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="Moq" Version="4.9.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Community.AspNetCore.ExceptionHandling.Mvc\Community.AspNetCore.ExceptionHandling.Mvc.csproj" />
+    <ProjectReference Include="..\Community.AspNetCore.ExceptionHandling.NewtonsoftJson\Community.AspNetCore.ExceptionHandling.NewtonsoftJson.csproj" />
+    <ProjectReference Include="..\Community.AspNetCore.ExceptionHandling\Community.AspNetCore.ExceptionHandling.csproj" />
+  </ItemGroup>
+
+</Project>

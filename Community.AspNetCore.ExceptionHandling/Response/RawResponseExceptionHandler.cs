@@ -2,16 +2,13 @@
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Builder;
-using Commmunity.AspNetCore.ExceptionHandling.Handlers;
-using Commmunity.AspNetCore.ExceptionHandling.Logs;
+using Community.AspNetCore.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Response
+namespace Community.AspNetCore.ExceptionHandling.Response
 {
     public class RawResponseExceptionHandler<TException> : HandlerStrongType<TException>
         where TException : Exception
@@ -83,7 +80,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
             return Task.CompletedTask;
         }
 
-        public static Task SetBody(HttpContext context, TException exception, Func<HttpRequest, StreamWriter, TException, Task> settings) 
+        public static Task SetBody(HttpContext context, TException exception, Func<HttpRequest, Stream, TException, Task> settings) 
         {
             if (!context.Items.ContainsKey(BodySetKey))
             {
@@ -99,9 +96,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Response
 
                 if (stream.CanWrite)
                 {
-                    StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 1024, true);
-
-                    return settings(context.Request, writer, exception);                    
+                    return settings(context.Request, stream, exception);                    
                 }
                 else
                 {

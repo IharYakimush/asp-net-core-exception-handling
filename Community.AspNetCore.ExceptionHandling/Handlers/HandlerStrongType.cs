@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Handlers
+namespace Community.AspNetCore.ExceptionHandling.Handlers
 {
     public abstract class HandlerStrongType<TException> : HandlerWithLogger, IExceptionHandler
         where TException : Exception

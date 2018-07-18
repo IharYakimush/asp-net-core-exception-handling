@@ -1,5 +1,5 @@
 ﻿using System;
-using Commmunity.AspNetCore.ExceptionHandling.Builder;
+using Community.AspNetCore.ExceptionHandling.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Mvc
+namespace Community.AspNetCore.ExceptionHandling.Mvc
 {
     public static class PolicyBuilderExtensions
     {
@@ -85,7 +85,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Mvc
             where TException : Exception
             where TResult : IActionResult
         {
-            return builder.WithActionResult((request, exception) => result);
+            return WithActionResult(builder, (request, exception) => result);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Mvc
             this IResponseHandlers<TException> builder, TObject value, int index = -1)
             where TException : Exception
         {
-            return builder.WithActionResult(new ObjectResult(value), index);
+            return WithActionResult(builder, new ObjectResult(value), index);
         }
 
         /// <summary>
@@ -141,8 +141,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Mvc
             this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TObject> valueFactory, int index = -1)
             where TException : Exception
         {
-            return builder.WithActionResult(
-                (request, exception) => new ObjectResult(valueFactory(request, exception)), index);
+            return WithActionResult(builder, (request, exception) => new ObjectResult(valueFactory(request, exception)), index);
         }
     }
 }

@@ -5,11 +5,11 @@
     <Description>Extension methods to configure exception handler which write object serialized using Newtonsoft.Json serializer to responce body. In case of using netcore2.1+ use Commmunity.AspNetCore.ExceptionHandling.Mvc package instead</Description>
     <Authors>IharYakimush</Authors>
     <Copyright>IharYakimush</Copyright>
-    <PackageLicenseUrl>https://github.com/IharYakimush/AspNetCore/blob/develop/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/IharYakimush/AspNetCore</PackageProjectUrl>
-    <PackageTags>AspNetCore exception handling policy json response</PackageTags>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <Version>2.0.0</Version>
+    <PackageLicenseUrl>https://github.com/IharYakimush/asp-net-core-exception-handling/blob/develop/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/IharYakimush/asp-net-core-exception-handling</PackageProjectUrl>
+    <PackageTags>aspnetcore exception handling policy json response</PackageTags>
+    <AssemblyVersion>2.0.2.0</AssemblyVersion>
+    <Version>2.0.2</Version>
     <Company />
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>

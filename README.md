@@ -1,5 +1,5 @@
-# AspNetCore Exception Handling
-Middleware to configure AspNetCore exception handling policies. Allows to set a chain of exception handlers per exception type. OOTB handlers: log, retry, set responce headers and body
+# ASP.NET Core Exception Handling
+ASP.NET Core exception handling policies middleware. Allows to set a chain of exception handlers per exception type. OOTB handlers: log, retry, set responce headers and body
 
 ### Code Sample
 ```
@@ -11,13 +11,17 @@ public void ConfigureServices(IServiceCollection services)
     {
         options.For<InitializationException>().Rethrow();
                 
-        options.For<SomeTransientException>().Retry(ro => ro.MaxRetryCount = 2).NextChain();
+        options.For<SomeTransientException>().Retry(ro => ro.MaxRetryCount = 2).NextPolicy();
                 
         options.For<SomeBadRequestException>()
             .Response(e => 400)
                 .Headers((h, e) => h["X-MyCustomHeader"] = e.Message)
-                .WithBody((req,sw, exception) => sw.WriteAsync(exception.ToString()))
-            .NextChain();
+				.WithBody((req,sw, exception) =>
+                    {
+                        byte[] array = Encoding.UTF8.GetBytes(exception.ToString());
+                        return sw.WriteAsync(array, 0, array.Length);
+                    })
+            .NextPolicy();
 
         // Ensure that all exception types are handled by adding handler for generic exception at the end.
         options.For<Exception>()
@@ -41,13 +45,13 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 ```
 
 ### Policy exception handler transitions
-When exception catched in middleware it try to apply handlers from first registered policy siutable for given exception. Policy contains a chain of handlers. Each handler perform some action and apply transition. To prevent re throw of exception handlers chain MUST ends with "Handled" transition.
+When exception catched in middleware it try to apply handlers from first registered policy suitable for given exception. Policy contains a chain of handlers. Each handler perform some action and apply transition. To prevent re throw of exception handlers chain MUST ends with "Handled" transition.
 Following handlers currently supported:
 
 | Handler  | Action | Transition |
 | ---------| ------------- | ------------- |
 | Rethrow  | Apply ReThrow transition  | ReThrow |
-| NextPolicy  | Try to execute next policy siutable for given exception  | NextPolicy |
+| NextPolicy  | Try to execute next policy suitable for given exception  | NextPolicy |
 | Handled  | Mark exception as handled to prevent it from bein re thrown  | Handled |
 | Retry  | Execute aspnetcore pipeline again if retry count not exceed limit  | Retry (if retry limit not exceeded) or NextHandler |
 | Log  | Log exception  | NextHandler |
@@ -60,6 +64,6 @@ Sample of transitions:
 ### Nuget
 | Package  | Target | Comments |
 | ---------| ------------- | ------------- |
-| https://www.nuget.org/packages/Commmunity.AspNetCore.ExceptionHandling | netstandard2.0;netcoreapp2.1 | Main functionality |
-| https://www.nuget.org/packages/Commmunity.AspNetCore.ExceptionHandling.Mvc | netcoreapp2.1 | Alllow to use MVC IActionResult (including ObjectResult) in 'Response' handler |
-| https://www.nuget.org/packages/Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson | netstandard2.0; | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Commmunity.AspNetCore.ExceptionHandling.Mvc' usage not possible |
+| Community.AspNetCore.ExceptionHandling | netstandard2.0 netcoreapp2.1 | Main functionality |
+| Community.AspNetCore.ExceptionHandling.Mvc | netcoreapp2.1 | Alllow to use MVC IActionResult (including ObjectResult) in 'Response' handler |
+| Community.AspNetCore.ExceptionHandling.NewtonsoftJson | netstandard2.0 | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Community.AspNetCore.ExceptionHandling.Mvc' usage not possible |

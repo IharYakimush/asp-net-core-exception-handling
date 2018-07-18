@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Handlers;
+using Community.AspNetCore.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Response
+namespace Community.AspNetCore.ExceptionHandling.Response
 {
     public class RawResponseHandlerOptions<TException> : HandlerWithLoggerOptions,
         IOptions<RawResponseHandlerOptions<TException>>

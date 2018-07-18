@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Builder
+namespace Community.AspNetCore.ExceptionHandling.Builder
 {
     public class PolicyBuilder : IExceptionPolicyBuilder, IServiceCollection
     {

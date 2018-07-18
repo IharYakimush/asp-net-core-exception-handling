@@ -3,17 +3,17 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <Description>Extension methods to configure exception handler which write MVC action result to responce body. Userfull for writing objects</Description>
-    <PackageProjectUrl>https://github.com/IharYakimush/AspNetCore</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/IharYakimush/AspNetCore/blob/develop/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/IharYakimush/asp-net-core-exception-handling</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/IharYakimush/asp-net-core-exception-handling/blob/develop/LICENSE</PackageLicenseUrl>
     <Copyright>IharYakimush</Copyright>
-    <PackageTags>AspNetCore exception handling policy mvc action result</PackageTags>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <PackageTags>aspnetcore exception handling policy mvc action result</PackageTags>
+    <AssemblyVersion>2.0.2.0</AssemblyVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <FileVersion>2.0.0.0</FileVersion>
+    <FileVersion>2.0.2.0</FileVersion>
     <Company />
     <Authors>IharYakimush</Authors>
-    <Version>2.0.0</Version>
+    <Version>2.0.2</Version>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\sgn.snk</AssemblyOriginatorKeyFile>
     <ApplicationIcon />

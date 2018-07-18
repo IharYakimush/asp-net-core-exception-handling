@@ -1,18 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Builder;
-using Commmunity.AspNetCore.ExceptionHandling.Exc;
-using Commmunity.AspNetCore.ExceptionHandling.Handlers;
-using Commmunity.AspNetCore.ExceptionHandling.Logs;
-using Commmunity.AspNetCore.ExceptionHandling.Response;
-using Commmunity.AspNetCore.ExceptionHandling.Retry;
+using Community.AspNetCore.ExceptionHandling.Builder;
+using Community.AspNetCore.ExceptionHandling.Exc;
+using Community.AspNetCore.ExceptionHandling.Handlers;
+using Community.AspNetCore.ExceptionHandling.Logs;
+using Community.AspNetCore.ExceptionHandling.Response;
+using Community.AspNetCore.ExceptionHandling.Retry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Net.Http.Headers;
 
-namespace Commmunity.AspNetCore.ExceptionHandling
+namespace Community.AspNetCore.ExceptionHandling
 {
     public static class PolicyBuilderExtensions
     {
@@ -335,7 +335,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
         /// The policy builder 
         /// </param>
         /// <param name="settings">
-        /// Delegate to write response using <see cref="StreamWriter"/>.
+        /// Delegate to write to response stream.
         /// </param>
         /// <param name="index" optional="true">
         /// Handler index in the chain. Optional. By default handler added to the end of chain.
@@ -344,7 +344,7 @@ namespace Commmunity.AspNetCore.ExceptionHandling
         /// Policy builder
         /// </returns>
         public static IResponseHandlers<TException> WithBody<TException>(
-            this IResponseHandlers<TException> builder, Func<HttpRequest, StreamWriter, TException, Task> settings, int index = -1)
+            this IResponseHandlers<TException> builder, Func<HttpRequest, Stream, TException, Task> settings, int index = -1)
             where TException : Exception
         {
             if (settings == null)
@@ -353,12 +353,10 @@ namespace Commmunity.AspNetCore.ExceptionHandling
             }            
 
             builder.Services.Configure<RawResponseHandlerOptions<TException>>(responceOptions =>
-            {
-                responceOptions.SetResponse.Add((context, exception) =>
                 {
-                    return RawResponseExceptionHandler<TException>.SetBody(context, exception, settings);
+                    responceOptions.SetResponse.Add((context, exception) =>
+                        RawResponseExceptionHandler<TException>.SetBody(context, exception, settings));
                 });
-            });
 
             return builder;
         }        

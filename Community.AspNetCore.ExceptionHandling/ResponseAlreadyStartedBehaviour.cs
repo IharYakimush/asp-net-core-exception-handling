@@ -1,4 +1,4 @@
-﻿namespace Commmunity.AspNetCore.ExceptionHandling
+﻿namespace Community.AspNetCore.ExceptionHandling
 {
     public enum ResponseAlreadyStartedBehaviour
     {

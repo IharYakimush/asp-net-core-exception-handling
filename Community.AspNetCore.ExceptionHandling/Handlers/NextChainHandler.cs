@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Handlers
+namespace Community.AspNetCore.ExceptionHandling.Handlers
 {
     public class NextChainHandler : IExceptionHandler
     {

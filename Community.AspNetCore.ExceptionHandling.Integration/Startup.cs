@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Mvc;
+using Community.AspNetCore.ExceptionHandling.Mvc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Integration
+namespace Community.AspNetCore.ExceptionHandling.Integration
 {
     public class Startup
     {
@@ -40,7 +34,11 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
                 options.For<InvalidCastException>()
                     .Response(e => 400)
                     .Headers((h, e) => h["X-qwe"] = e.Message)
-                    .WithBody((req,sw, exception) => sw.WriteAsync(exception.ToString()))
+                    .WithBody((req,sw, exception) =>
+                    {
+                        byte[] array = Encoding.UTF8.GetBytes(exception.ToString());
+                        return sw.WriteAsync(array, 0, array.Length);
+                    })
                     .NextPolicy();
 
                 options.For<Exception>()
@@ -56,7 +54,8 @@ namespace Commmunity.AspNetCore.ExceptionHandling.Integration
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseResponseBuffering().UseDeveloperExceptionPage().UseExceptionHandlingPolicies();
+            //app.UseResponseBuffering();
+            app.UseDeveloperExceptionPage().UseExceptionHandlingPolicies();
             app.UseMvc();
         }
     }

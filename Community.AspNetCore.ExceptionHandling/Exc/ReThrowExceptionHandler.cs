@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Handlers;
+using Community.AspNetCore.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.Exc
+namespace Community.AspNetCore.ExceptionHandling.Exc
 {
     public class ReThrowExceptionHandler : IExceptionHandler
     {

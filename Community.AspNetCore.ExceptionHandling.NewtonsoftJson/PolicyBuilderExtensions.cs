@@ -1,13 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
-using Commmunity.AspNetCore.ExceptionHandling.Builder;
+using Community.AspNetCore.ExceptionHandling.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 
-namespace Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson
+namespace Community.AspNetCore.ExceptionHandling.NewtonsoftJson
 {
     public static class PolicyBuilderExtensions
     {
@@ -35,12 +36,12 @@ namespace Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson
         /// <returns>
         /// Policy builder
         /// </returns>
-        [Obsolete("In case of using netcore2.1+ use Commmunity.AspNetCore.ExceptionHandling.Mvc instead")]
+        [Obsolete("In case of using netcore2.1+ use Community.AspNetCore.ExceptionHandling.Mvc instead")]
         public static IResponseHandlers<TException> WithBodyJson<TException, TObject>(
             this IResponseHandlers<TException> builder, Func<HttpRequest, TException, TObject> valueFactory, JsonSerializerSettings settings = null, int index = -1)
             where TException : Exception
         {
-            return builder.WithBody((request, streamWriter, exception) =>
+            return builder.WithBody((request, stream, exception) =>
             {
                 if (settings == null)
                 {
@@ -65,15 +66,14 @@ namespace Commmunity.AspNetCore.ExceptionHandling.NewtonsoftJson
                 //return Task.CompletedTask;
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    using (StreamWriter sw = new StreamWriter(ms, streamWriter.Encoding, 1024, true))
+                    using (StreamWriter sw = new StreamWriter(ms, Encoding.UTF8, 1024, true))
                     {
                         jsonSerializer.Serialize(sw, val);
                     }
 
                     ms.Seek(0, SeekOrigin.Begin);
                     byte[] array = ms.ToArray();
-                    BinaryWriter binaryWriter = new BinaryWriter(streamWriter.BaseStream, streamWriter.Encoding, true);
-                    binaryWriter.Write(array);
+                    stream.WriteAsync(array, 0, array.Length);                    
 
                     return Task.CompletedTask;
                 }

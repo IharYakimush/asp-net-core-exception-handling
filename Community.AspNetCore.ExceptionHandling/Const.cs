@@ -1,7 +1,7 @@
-﻿namespace Commmunity.AspNetCore.ExceptionHandling
+﻿namespace Community.AspNetCore.ExceptionHandling
 {
     public static class Const
     {
-        public const string Category = "Commmunity.AspNetCore.ExceptionHandling";
+        public const string Category = "Community.AspNetCore.ExceptionHandling";
     }
 }
