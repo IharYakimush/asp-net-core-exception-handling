@@ -30,7 +30,7 @@ public void ConfigureServices(IServiceCollection services)
                     lo.EventIdFactory = (c, e) => new EventId(123, "UnhandlerException");
                     lo.Category = (context, exception) => "MyCategory";
                 })
-            .Response(e => 500, ResponseAlreadyStartedBehaviour.GoToNextHandler)
+            .Response(null, ResponseAlreadyStartedBehaviour.GoToNextHandler)
                 .ClearCacheHeaders()
                 .WithObjectResult((r, e) => new { msg = e.Message, path = r.Path })
             .Handled();
