@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Community.AspNetCore.ExceptionHandling.Integration.Controllers
 {
     [Route("api/[controller]")]
-    public class ValuesController : Controller
+    public class ValuesController : ControllerBase
     {
         // GET api/values
         [HttpGet]

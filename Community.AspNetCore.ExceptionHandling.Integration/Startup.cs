@@ -21,7 +21,7 @@ namespace Community.AspNetCore.ExceptionHandling.Integration
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvcCore().AddJsonFormatters();
 
             services.AddExceptionHandlingPolicies(options =>
             {
@@ -55,7 +55,7 @@ namespace Community.AspNetCore.ExceptionHandling.Integration
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             //app.UseResponseBuffering();
-            app.UseDeveloperExceptionPage().UseExceptionHandlingPolicies();
+            app.UseExceptionHandlingPolicies();
             app.UseMvc();
         }
     }
