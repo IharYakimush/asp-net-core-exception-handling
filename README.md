@@ -63,7 +63,7 @@ Sample of transitions:
 
 ### Nuget
 | Package | Comments |
-| ---------| ------------- | ------------- |
+| ---------| ------------- |
 | Community.AspNetCore.ExceptionHandling | Main functionality |
 | Community.AspNetCore.ExceptionHandling.Mvc | Allow to use MVC IActionResult (including ObjectResult) in 'Response' handler |
 | Community.AspNetCore.ExceptionHandling.NewtonsoftJson | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Community.AspNetCore.ExceptionHandling.Mvc' usage not possible |
