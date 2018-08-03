@@ -30,7 +30,7 @@ public void ConfigureServices(IServiceCollection services)
                     lo.EventIdFactory = (c, e) => new EventId(123, "UnhandlerException");
                     lo.Category = (context, exception) => "MyCategory";
                 })
-            .Response(e => 500, ResponseAlreadyStartedBehaviour.GoToNextHandler)
+            .Response(null, ResponseAlreadyStartedBehaviour.GoToNextHandler)
                 .ClearCacheHeaders()
                 .WithObjectResult((r, e) => new { msg = e.Message, path = r.Path })
             .Handled();
@@ -62,8 +62,8 @@ Sample of transitions:
 ![alt text](/Transitions.png)
 
 ### Nuget
-| Package  | Target | Comments |
-| ---------| ------------- | ------------- |
-| Community.AspNetCore.ExceptionHandling | netstandard2.0 netcoreapp2.1 | Main functionality |
-| Community.AspNetCore.ExceptionHandling.Mvc | netcoreapp2.1 | Alllow to use MVC IActionResult (including ObjectResult) in 'Response' handler |
-| Community.AspNetCore.ExceptionHandling.NewtonsoftJson | netstandard2.0 | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Community.AspNetCore.ExceptionHandling.Mvc' usage not possible |
+| Package | Comments |
+| ---------| ------------- |
+| Community.AspNetCore.ExceptionHandling | Main functionality |
+| Community.AspNetCore.ExceptionHandling.Mvc | Allow to use MVC IActionResult (including ObjectResult) in 'Response' handler |
+| Community.AspNetCore.ExceptionHandling.NewtonsoftJson | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Community.AspNetCore.ExceptionHandling.Mvc' usage not possible |
