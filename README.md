@@ -1,4 +1,4 @@
-# ASP.NET Core Exception Handling
+# ASP.NET Core Exception Handling Middleware
 ASP.NET Core exception handling policies middleware. Allows to set a chain of exception handlers per exception type. OOTB handlers: log, retry, set responce headers and body
 
 ### Code Sample
