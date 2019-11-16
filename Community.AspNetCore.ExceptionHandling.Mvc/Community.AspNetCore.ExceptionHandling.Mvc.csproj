@@ -7,19 +7,19 @@
     <PackageLicenseUrl>https://github.com/IharYakimush/asp-net-core-exception-handling/blob/develop/LICENSE</PackageLicenseUrl>
     <Copyright>IharYakimush</Copyright>
     <PackageTags>aspnetcore exception handling policy mvc action result</PackageTags>
-    <AssemblyVersion>2.0.3.0</AssemblyVersion>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <FileVersion>2.0.3.0</FileVersion>
+    <FileVersion>2.2.0.0</FileVersion>
     <Company />
     <Authors>IharYakimush</Authors>
-    <Version>2.0.3</Version>
+    <Version>2.2.0</Version>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\sgn.snk</AssemblyOriginatorKeyFile>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
-    <PackageReleaseNotes>target netstandard2.0 only</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed compatibility with AspNetCore 2.2 and AspNetCore 3.0 for log handler. Breaking changes in log handler configuration.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

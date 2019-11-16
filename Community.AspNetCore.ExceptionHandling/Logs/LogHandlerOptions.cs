@@ -19,19 +19,9 @@ namespace Community.AspNetCore.ExceptionHandling.Logs
         public LogHandlerOptions<TException> Value => this;
 
         /// <summary>
-        /// Factory for <see cref="EventId"/>
+        /// Action to log exception. If not set logger.LogError("Unhandled error occured. RequestId: {requestId}.", httpContext.TraceIdentifier); will be used by default.
         /// </summary>
-        public Func<HttpContext, TException, EventId> EventIdFactory { get; set; }
-
-        /// <summary>
-        /// The Formatter. By default state.ToString(). 
-        /// </summary>
-        public Func<object, TException, string> Formatter { get; set; }
-
-        /// <summary>
-        /// Foctory for log entry state. By default <see cref="FormattedLogValues"/> with TraceIdentifier.
-        /// </summary>
-        public Func<HttpContext, TException, LogHandlerOptions<TException>, object> StateFactory { get; set; }
+        public Action<ILogger, HttpContext, TException> LogAction { get; set; }
 
         /// <summary>
         /// Factory for log category. By default "Community.AspNetCore.ExceptionHandling" will be used.
@@ -39,8 +29,8 @@ namespace Community.AspNetCore.ExceptionHandling.Logs
         public Func<HttpContext, TException, string> Category { get; set; }
 
         /// <summary>
-        /// Factory for <see cref="LogLevel"/> log level. By default <see cref="LogLevel.Error"/> error will be used. In case of <see cref="LogLevel.None"/> none log entry will be skipped.
+        /// Rethrow exception from LogAction.
         /// </summary>
-        public Func<HttpContext, TException, LogLevel> Level { get; set; }
+        public bool RethrowLogActionExceptions { get; set; } = false;
     }
 }

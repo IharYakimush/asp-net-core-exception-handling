@@ -7,40 +7,31 @@
     <PackageLicenseUrl>https://github.com/IharYakimush/asp-net-core-exception-handling/blob/develop/LICENSE</PackageLicenseUrl>
     <Copyright>IharYakimush</Copyright>
     <PackageTags>aspnetcore exception handling policy</PackageTags>
-    <AssemblyVersion>2.0.3.0</AssemblyVersion>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <FileVersion>2.0.3.0</FileVersion>
+    <FileVersion>2.2.0.0</FileVersion>
     <Company />
     <Authors>IharYakimush</Authors>
-    <Version>2.0.3</Version>
+    <Version>2.2.0</Version>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\sgn.snk</AssemblyOriginatorKeyFile>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
-    <PackageReleaseNotes>target netstandard2.0 only</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed compatibility with AspNetCore 2.2 and AspNetCore 3.0 for log handler. Breaking changes in log handler configuration.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-    <DefineConstants>NETCOREAPP;NETCOREAPP2_1</DefineConstants>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
-  </ItemGroup>
-  
-  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <DefineConstants>NETSTANDARD;NETSTANDARD2_0</DefineConstants>
-  </PropertyGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.0" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.0.0" />
   </ItemGroup>
 
 </Project>
