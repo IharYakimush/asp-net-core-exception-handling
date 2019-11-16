@@ -15,6 +15,8 @@ namespace Community.AspNetCore.ExceptionHandling.Logs
 
         private static readonly EventId DefaultEvent = new EventId(500, "UnhandledException");
 
+        private static readonly EventId LogActionErrorEvent = new EventId(501, "LogActionError");
+
         public LogHandlerOptions<TException> Settings => this._settings.Value;
 
         public LogExceptionHandler(IOptions<LogHandlerOptions<TException>> settings, ILoggerFactory loggerFactory):base(settings.Value, loggerFactory)
@@ -23,14 +25,7 @@ namespace Community.AspNetCore.ExceptionHandling.Logs
         }
 
         protected override Task<HandlerResult> HandleStrongType(HttpContext httpContext, TException exception)
-        {
-            var logLevel = this.Settings.Level?.Invoke(httpContext, exception) ?? LogLevel.Error;
-
-            if (logLevel == LogLevel.None)
-            {
-                return Task.FromResult(HandlerResult.NextHandler);
-            }
-
+        {            
             if (exception.Data.Contains(DisableLoggingHandler.DisableLoggingFlagKey))
             {
                 return Task.FromResult(HandlerResult.NextHandler);
@@ -42,29 +37,36 @@ namespace Community.AspNetCore.ExceptionHandling.Logs
                     loggerFactory.CreateLogger(this.Settings.Category?.Invoke(httpContext, exception) ??
                                                Const.Category);
 
-                EventId eventId = this.Settings.EventIdFactory != null
-                    ? this.Settings.EventIdFactory(httpContext, exception)
-                    : DefaultEvent;
+                Action<ILogger, HttpContext, TException> logAction = this.Settings.LogAction ?? LogDefault;
 
-                object state = this.Settings.StateFactory?.Invoke(httpContext, exception, this.Settings) ??
-                               new FormattedLogValues("Unhandled error occured. RequestId: {requestId}.",
-                                   httpContext.TraceIdentifier);
-
-                Func<object, Exception, string> formatter;
-
-                if (this.Settings.Formatter != null)
+                try
                 {
-                    formatter = (o, e) => this.Settings.Formatter(0, e as TException);
+                    logAction(logger, httpContext, exception);
                 }
-                else
+                catch (Exception logException)
                 {
-                    formatter = (o, e) => o.ToString();
+                    try
+                    {
+                        logger.LogWarning(DefaultEvent, logException, "Unhandled error occured in log action.");
+                    }
+                    catch
+                    {
+                        // don't fail in case of errors with this log
+                    }
+
+                    if (this.Settings.RethrowLogActionExceptions)
+                    {
+                        throw;
+                    }
                 }
-                    
-                logger.Log(logLevel, eventId, state, exception, formatter);
             }
 
             return Task.FromResult(HandlerResult.NextHandler);
+        }
+
+        private static void LogDefault(ILogger logger, HttpContext context, TException exception)
+        {
+            logger.LogError(DefaultEvent, exception, "Unhandled error occured. RequestId: {requestId}.", context.TraceIdentifier);
         }
     }
 }

@@ -27,7 +27,7 @@ public void ConfigureServices(IServiceCollection services)
         options.For<Exception>()
             .Log(lo =>
                 {
-                    lo.EventIdFactory = (c, e) => new EventId(123, "UnhandlerException");
+                    lo.LogAction = (l, c, e) => l.LogError(e,"UnhandledException");
                     lo.Category = (context, exception) => "MyCategory";
                 })
             .Response(null, ResponseAlreadyStartedBehaviour.GoToNextHandler)

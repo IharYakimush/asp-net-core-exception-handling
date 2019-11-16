@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Community.AspNetCore.ExceptionHandling.Integration
 {
@@ -21,7 +22,11 @@ namespace Community.AspNetCore.ExceptionHandling.Integration
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+#if NETCOREAPP3_0
+            services.AddMvc(options => options.EnableEndpointRouting = false);
+#else            
             services.AddMvc();
+#endif
 
             services.AddExceptionHandlingPolicies(options =>
             {
@@ -42,7 +47,7 @@ namespace Community.AspNetCore.ExceptionHandling.Integration
                     .NextPolicy();
 
                 options.For<Exception>()
-                    .Log(lo => { lo.Formatter = (o, e) => "qwe"; })
+                    .Log(lo => { lo.LogAction = (l, c, e) => l.LogError(e,"qwe"); })
                     //.Response(e => 500, ResponseAlreadyStartedBehaviour.GoToNextHandler).ClearCacheHeaders().WithBodyJson((r, e) => new { msg = e.Message, path = r.Path })
                     .Response(e => 500, ResponseAlreadyStartedBehaviour.GoToNextHandler).ClearCacheHeaders().WithObjectResult((r, e) => new { msg = e.Message, path = r.Path })
                     .Handled();

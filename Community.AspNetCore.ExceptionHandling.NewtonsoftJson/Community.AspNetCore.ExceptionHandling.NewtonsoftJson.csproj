@@ -8,11 +8,12 @@
     <PackageLicenseUrl>https://github.com/IharYakimush/asp-net-core-exception-handling/blob/develop/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/IharYakimush/asp-net-core-exception-handling</PackageProjectUrl>
     <PackageTags>aspnetcore exception handling policy json response</PackageTags>
-    <AssemblyVersion>2.0.2.0</AssemblyVersion>
-    <Version>2.0.2</Version>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <Version>2.2.0</Version>
     <Company />
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Fixed compatibility with AspNetCore 2.2 and AspNetCore 3.0 for log handler. Breaking changes in log handler configuration.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
