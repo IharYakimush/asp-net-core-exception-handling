@@ -60,7 +60,7 @@ namespace Community.AspNetCore.ExceptionHandling.Integration
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             //app.UseResponseBuffering();
-            app.UseDeveloperExceptionPage().UseExceptionHandlingPolicies();
+            app.UseExceptionHandlingPolicies();
             app.UseMvc();
         }
     }

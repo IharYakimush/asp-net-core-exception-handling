@@ -1,4 +1,4 @@
-# ASP.NET Core Exception Handling
+# ASP.NET Core Exception Handling Middleware
 ASP.NET Core exception handling policies middleware. Allows to set a chain of exception handlers per exception type. OOTB handlers: log, retry, set responce headers and body
 
 ### Code Sample
@@ -62,8 +62,8 @@ Sample of transitions:
 ![alt text](/Transitions.png)
 
 ### Nuget
-| Package  | Target | Comments |
-| ---------| ------------- | ------------- |
-| Community.AspNetCore.ExceptionHandling | netstandard2.0 netcoreapp2.1 | Main functionality |
-| Community.AspNetCore.ExceptionHandling.Mvc | netcoreapp2.1 | Alllow to use MVC IActionResult (including ObjectResult) in 'Response' handler |
-| Community.AspNetCore.ExceptionHandling.NewtonsoftJson | netstandard2.0 | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Community.AspNetCore.ExceptionHandling.Mvc' usage not possible |
+| Package | Comments |
+| ---------| ------------- |
+| Community.AspNetCore.ExceptionHandling | Main functionality |
+| Community.AspNetCore.ExceptionHandling.Mvc | Allow to use MVC IActionResult (including ObjectResult) in 'Response' handler |
+| Community.AspNetCore.ExceptionHandling.NewtonsoftJson | Allow to set Json serialized object as a response body in 'Response' handler. Use it only if 'Community.AspNetCore.ExceptionHandling.Mvc' usage not possible |
