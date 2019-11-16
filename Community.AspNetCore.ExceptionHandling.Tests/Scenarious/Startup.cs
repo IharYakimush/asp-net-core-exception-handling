@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Community.AspNetCore.ExceptionHandling.Tests.Scenarious
 {
@@ -58,7 +59,7 @@ namespace Community.AspNetCore.ExceptionHandling.Tests.Scenarious
                 options.For<CommonResponseException>().Log().NextPolicy();
 
                 options.For<BaseException>()
-                    .Log(lo => { lo.Formatter = (o, e) => "qwe"; })                    
+                    .Log(lo => { lo.LogAction = (l, c, e) => l.LogError(e, "qwe"); })                    
                     .Response(null, ResponseAlreadyStartedBehaviour.GoToNextHandler)
                         .ClearCacheHeaders()
                         .Headers((h, e) => h.Add("X-Common", "val"))
