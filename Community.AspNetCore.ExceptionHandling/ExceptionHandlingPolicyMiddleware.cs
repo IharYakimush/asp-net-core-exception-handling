@@ -149,7 +149,7 @@ namespace Community.AspNetCore.ExceptionHandling
                     {
                         logger.LogWarning(Events.RetryForStartedResponce,
                         exception,
-                            "Retry requested when responce already started. Exception will be re-thrown. RequestId: {RequestId}",
+                            "Retry requested when response already started. Exception will be re-thrown. RequestId: {RequestId}",
                             context.TraceIdentifier);
 
                         throw;
@@ -173,6 +173,7 @@ namespace Community.AspNetCore.ExceptionHandling
                             context.TraceIdentifier);
 
                     context.Response.Headers.Clear();
+
 
                     await InvokeWithRetryAsync(context, next, logger, iteration + 1);
                 }
